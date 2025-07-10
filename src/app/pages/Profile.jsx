@@ -9,29 +9,28 @@ export default function Profile() {
   const [userPosts, setUserPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchUserAndPosts = async () => {
       try {
-        // קבל נתוני משתמש מ-localStorage
         const userData = localStorage.getItem('user');
         const token = localStorage.getItem('token');
         
         if (userData) {
           const parsedUser = JSON.parse(userData);
           
-          // הגדר נתוני משתמש
           setUser({
             id: parsedUser._id || parsedUser.id,
             username: parsedUser.username,
             email: parsedUser.email,
+            bio: parsedUser.bio || '',
             profilePicture: parsedUser.profilePicture || "https://via.placeholder.com/100",
             postsCount: parsedUser.postsCount || 0,
             friendsCount: parsedUser.friendsCount || 0,
             watchedCount: parsedUser.watchedCount || 0,
-            favoriteGenres: parsedUser.favoriteGenres || ["Drama", "Comedy", "Action"]
+            favoriteGenres: parsedUser.favoriteGenres || ["Drama", "Comedy", "Action"],
+            favoriteMovies: parsedUser.favoriteMovies || []
           });
 
-          // טען את הפוסטים של המשתמש מהשרת
           if (token) {
             await fetchUserPosts(parsedUser);
           }
@@ -46,38 +45,29 @@ export default function Profile() {
     fetchUserAndPosts();
   }, []);
 
-  // פונקציה לטעינת פוסטים של המשתמש
   const fetchUserPosts = async (parsedUser) => {
     try {
       const response = await axios.get('http://localhost:3001/api/posts');
-
-      // סנן פוסטים לפי המשתמש הנוכחי
       const currentUserId = parsedUser._id || parsedUser.id;
       const filteredPosts = response.data.filter(post => 
         post.author._id === currentUserId || post.author.id === currentUserId
       );
-      
       setUserPosts(filteredPosts);
     } catch (error) {
       console.error('Error fetching user posts:', error);
     }
   };
 
-  // פונקציה לטיפול בפוסט חדש
   const handlePostCreated = async (newPost) => {
     console.log('New post created:', newPost);
-    
-    // הוסף את הפוסט החדש לתחילת הרשימה
     setUserPosts(prevPosts => [newPost, ...prevPosts]);
     
-    // אופציונלי: טען מחדש את כל הפוסטים כדי להבטיח עקביות
     const userData = localStorage.getItem('user');
     if (userData) {
       const parsedUser = JSON.parse(userData);
       await fetchUserPosts(parsedUser);
     }
   };
-
 
   const handleEdit = () => {
     alert("Edit profile clicked");
@@ -93,9 +83,13 @@ export default function Profile() {
 
   if (isLoading) {
     return (
-      <div className="text-center mt-5">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 d-flex align-items-center justify-content-center">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <h5 className="text-white">Loading your profile...</h5>
+          <p className="text-muted">Please wait while we fetch your data</p>
         </div>
       </div>
     );
@@ -103,29 +97,43 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="text-center mt-5">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 d-flex align-items-center justify-content-center">
+        <div className="text-center">
+          <div className="alert alert-warning" role="alert">
+            <h4 className="alert-heading">⚠️ Profile Not Found</h4>
+            <p>Unable to load profile data. Please try refreshing the page.</p>
+          </div>
         </div>
       </div>
     );
   }
+
   return (
-    <div className="container mx-auto p-4">
-      <ProfileHeader
-        user={user}
-        onEdit={handleEdit}
-        onSettings={handleSettings}
-        onPostCreated={handlePostCreated}
-      />
-      <div className="mt-6">
-        <ProfileTabs
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          userPosts={userPosts}
-          onLikePost={handleLikePost}
-          currentUser={user}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
+      <div className="container py-4">
+        <ProfileHeader
+          user={user}
+          onUserUpdated={(updatedUser) => setUser(updatedUser)}
+          onPostCreated={handlePostCreated}
         />
+        
+        <div className="mt-4">
+          <ProfileTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            userPosts={userPosts}
+            onLikePost={handleLikePost}
+            currentUser={user}
+            onPostDeleted={(deletedPostId) => {
+              setUserPosts(prevPosts => prevPosts.filter(post => post._id !== deletedPostId));
+            }}
+            onPostUpdated={(updatedPost) => {
+              setUserPosts(prevPosts => 
+                prevPosts.map(post => post._id === updatedPost._id ? updatedPost : post)
+              );
+            }}
+          />
+        </div>
       </div>
     </div>
   );
