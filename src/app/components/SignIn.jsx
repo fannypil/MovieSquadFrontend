@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { useAuth } from "../hooks/useAuth"
 
 export default function SignIn({onLoginSuccess}){
     const [email, setEmail] = useState("")
@@ -9,6 +10,8 @@ export default function SignIn({onLoginSuccess}){
     const [success, setSuccess] = useState(false)
     const [errors, setErrors] = useState({})
     const [isLoading, setIsLoading] = useState(false)
+
+    const { login } = useAuth();
 
     const validateForm = () => {
         const newErrors = {}
@@ -40,49 +43,27 @@ export default function SignIn({onLoginSuccess}){
         
         setIsLoading(true)
         
-        try {
-            // Make API call to your backend
-            const response = await axios.post('http://localhost:3001/api/auth/login', {
-                email: email.trim(),
-                password: password
-            })
+         try {
+            const result = await login(email.trim(), password);
+            
+            if (result.success) {
+                setSuccess(true)
+                
+                // Clear form after successful login
+                setEmail("")
+                setPassword("")
 
-            console.log('Login response:', response.data) // Debug log
-
-            // Handle successful login - FIX: Get token and user from the correct structure
-            const token = response.data.token
-            const user = response.data.user
-            
-            console.log('Token being saved:', token) // Debug log
-            console.log('User being saved:', user) // Debug log
-            
-            // Store token in localStorage
-            localStorage.setItem('token', token)
-            
-            // Store user data
-            localStorage.setItem('user', JSON.stringify(user))
-        
-            
-            setSuccess(true)
-            
-            // Clear form after successful login
-            setEmail("")
-            setPassword("")
-
-            // Call the callback to update parent component
-            if (onLoginSuccess) {
-                onLoginSuccess(user)
+                // Call the callback to update parent component
+                if (onLoginSuccess) {
+                    onLoginSuccess(result.user)
+                }
+            } else {
+                setErrors({ general: result.error })
             }
 
         } catch (error) {
             console.log(error)
-            if (error.response?.data?.message) {
-                setErrors({ general: error.response.data.message })
-            } else if (error.response?.status === 401) {
-                setErrors({ general: "Invalid email or password" })
-            } else {
-                setErrors({ general: "An error occurred during sign in. Please try again." })
-            }
+            setErrors({ general: "An error occurred during sign in. Please try again." })
         } finally {
             setIsLoading(false)
         }

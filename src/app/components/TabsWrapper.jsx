@@ -43,7 +43,12 @@ export default function TabsWrapper({
               style={getTabStyle(activeTab === tab.id)}
               disabled={tab.disabled}
             >
-              {tab.icon && <span className="me-2">{tab.icon}</span>}
+                {tab.icon && (
+                <span className="me-2">
+                  {/* Handle both string and component icons */}
+                  {typeof tab.icon === 'string' ? tab.icon : tab.icon}
+                </span>
+              )}              
               {tab.label}
               {tab.count !== undefined && (
                 <span className="badge bg-secondary ms-2">{tab.count}</span>

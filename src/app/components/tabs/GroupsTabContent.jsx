@@ -98,7 +98,7 @@ export default function GroupsTabContent({ currentUser, onViewGroup }) {
       {/* Groups List */}
       {userGroups.length === 0 ? (
         <EmptyState 
-          icon="👥"
+          icon="people"
           title="No groups found"
           description="Create or join some groups to see them here!"
           showButton={false}

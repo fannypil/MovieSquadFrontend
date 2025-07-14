@@ -1,47 +1,41 @@
 "use client"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import SignIn from "./SignIn"
 import SignUp from "./SignUp"
-import Profile from "../pages/Profile"
+import Home from "../pages/Home"
+import { useAuth } from "../hooks/useAuth"
 
 export default function Dashboard() {
-    const [user, setUser] = useState(null)
+    const { user, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
+    // Redirect authenticated users to home
     useEffect(() => {
-        // Check if user is logged in by checking localStorage
-        const token = localStorage.getItem('token')
-        const userData = localStorage.getItem('user')
-        
-        if (token && userData) {
-            setUser(JSON.parse(userData))
+        if (isAuthenticated && user) {
+            navigate('/home', { replace: true });
         }
-    }, [])
-
-    const handleSignOut = () => {
-        // Clear localStorage
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        setUser(null)
-        alert("User signed out!")
-    }
+    }, [isAuthenticated, user, navigate]);
 
     const handleLoginSuccess = (userData) => {
-        setUser(userData)
+        console.log('Login success:', userData);
+        navigate('/home', { replace: true });
     }
 
+    // Only render auth forms if user is not authenticated
+    if (isAuthenticated && user) {
+        return null; // Component will redirect via useEffect
+    }
+
+
     return(
-        <div className="container mt-5">
-            {user ? (
-                <div className="text-center">
-                    <h1 className="mb-4">Welcome {user.email}</h1>
-                    <button className="btn btn-danger" onClick={handleSignOut}>Sign out</button>
-                    <div className="mt-4">
-                        <Profile />
-                    </div>
-                </div>
+        <div >
+            {isAuthenticated && user ? (
+                <Home/>
             ) : (
-                <div className="text-center">
-                    <h2 className="mb-4">Sign in or SignUp</h2>
+                <div className="text-center mb-5">
+                    <h1 className="display-4 text-white mb-3">Welcome to MovieSquad</h1>
+                    <p className="lead text-light">Connect with fellow movie enthusiasts</p>                    
                     <div className="row justify-content-center">
                         <div className="col-md-6 col-lg-4 mb-3">
                             <SignIn onLoginSuccess={handleLoginSuccess}/>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { useAuth } from "../hooks/useAuth"
 
 export default function SignUp({onLoginSuccess}){
     const [username, setUsername] = useState("")
@@ -10,6 +11,9 @@ export default function SignUp({onLoginSuccess}){
     const [success, setSuccess] = useState(false)
     const [errors, setErrors] = useState({})
     const [isLoading, setIsLoading] = useState(false)
+
+    const { login } = useAuth();
+
 
     const validateForm = () => {
         const newErrors = {}
@@ -60,27 +64,23 @@ export default function SignUp({onLoginSuccess}){
 
             console.log('Registration response:', response.data) // Debug log
 
-            // Handle successful registration - FIX: Get token and user from the correct structure
-            const token = response.data.token
-            const user = response.data.user
-            
-            // Store token in localStorage
-            localStorage.setItem('token', token)
-            
-            // Store user data
-            localStorage.setItem('user', JSON.stringify(user))
-            
-            setSuccess(true)
+            const loginResult = await login(email.trim(), password);
+
+              if (loginResult.success) {
+                setSuccess(true)
             
             // Clear form after successful registration
-            setUsername("")
-            setEmail("")
-            setPassword("")
+                setUsername("")
+                setEmail("")
+                setPassword("")
 
             // Call the callback to update parent component
-            if (onLoginSuccess) {
-                onLoginSuccess(user)
+           if (onLoginSuccess) {
+                onLoginSuccess(loginResult.user)
+            }else {
+                setErrors({ general: "Registration successful but login failed. Please sign in manually." })
             }
+        }
             
         } catch (error) {
             console.log(error)
@@ -96,7 +96,7 @@ export default function SignUp({onLoginSuccess}){
     
     return(
          <div className="card p-4 shadow-sm"> 
-            <h2 className="text-center mb-4"> Sign up </h2>
+            <h2 className="text-center mb-4"> Sign Up </h2>
             
             {/* Success Message */}
             {success && (

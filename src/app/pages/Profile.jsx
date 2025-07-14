@@ -2,90 +2,111 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import ProfileTabs from "../components/profile/ProfileTabs";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("posts");
-  const [user, setUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
+  const [userGroups, setUserGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user, token } = useAuth();
 
-  useEffect(() => {
-    const fetchUserAndPosts = async () => {
-      try {
-        const userData = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-        
-        if (userData) {
-          const parsedUser = JSON.parse(userData);
-          
-          setUser({
-            id: parsedUser._id || parsedUser.id,
-            username: parsedUser.username,
-            email: parsedUser.email,
-            bio: parsedUser.bio || '',
-            profilePicture: parsedUser.profilePicture || "https://via.placeholder.com/100",
-            postsCount: parsedUser.postsCount || 0,
-            friendsCount: parsedUser.friendsCount || 0,
-            watchedCount: parsedUser.watchedCount || 0,
-            favoriteGenres: parsedUser.favoriteGenres || ["Drama", "Comedy", "Action"],
-            favoriteMovies: parsedUser.favoriteMovies || []
-          });
-
-          if (token) {
-            await fetchUserPosts(parsedUser);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserAndPosts();
-  }, []);
-
-  const fetchUserPosts = async (parsedUser) => {
+  const fetchUserPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/posts');
-      const currentUserId = parsedUser._id || parsedUser.id;
-      const filteredPosts = response.data.filter(post => 
-        post.author._id === currentUserId || post.author.id === currentUserId
-      );
+      const response = await axios.get('http://localhost:3001/api/posts', {
+        headers: { 'x-auth-token': token }
+      });
+      
+      const currentUserId = user._id || user.id;
+      const filteredPosts = response.data.filter(post => {
+        const isUserPost = post.author._id === currentUserId || post.author.id === currentUserId;
+        const isNotGroupPost = !post.group; 
+        return isUserPost && isNotGroupPost;
+      });
       setUserPosts(filteredPosts);
     } catch (error) {
       console.error('Error fetching user posts:', error);
     }
   };
 
-  const handlePostCreated = async (newPost) => {
-    console.log('New post created:', newPost);
-    setUserPosts(prevPosts => [newPost, ...prevPosts]);
-    
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      const parsedUser = JSON.parse(userData);
-      await fetchUserPosts(parsedUser);
+  const fetchUserGroups = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/api/groups', {
+        headers: { 'x-auth-token': token }
+      });
+      
+      const myGroups = response.data.filter(group => 
+        group.members?.some(member => 
+          (member._id || member.id || member) === (user._id || user.id)
+        )
+      );
+      setUserGroups(myGroups);
+    } catch (error) {
+      console.error('Error fetching user groups:', error);
+      setUserGroups([]);
     }
   };
 
-  const handleEdit = () => {
-    alert("Edit profile clicked");
+  const fetchUserData = async () => {
+    if (!user || !token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await Promise.all([
+        fetchUserPosts(),
+        fetchUserGroups()
+      ]);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSettings = () => {
-    alert("Settings clicked");
+  useEffect(() => {
+    fetchUserData();
+  }, [user, token]); 
+
+  const handlePostCreated = async (newPost) => {
+    console.log('New post created:', newPost);
+    setUserPosts(prevPosts => [newPost, ...prevPosts]);
+    await fetchUserPosts();
+  };
+
+  const handleUserUpdated = () => {
+    // Refresh user data when profile is updated
+    fetchUserData();
+  };
+
+  const handleGroupJoined = () => {
+    fetchUserGroups();
   };
 
   const handleLikePost = (postId) => {
     alert(`Liked post ${postId}`);
   };
 
+  if (!user || !token) {
+    return (
+      <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+        <div className="text-center">
+          <div className="alert alert-warning" role="alert">
+            <h4 className="alert-heading"> Authentication Required</h4>
+            <p>Please log in to view your profile.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 d-flex align-items-center justify-content-center">
+      <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
         <div className="text-center">
-          <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
+          <div className="spinner-border text-warning mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
             <span className="visually-hidden">Loading...</span>
           </div>
           <h5 className="text-white">Loading your profile...</h5>
@@ -95,25 +116,14 @@ export default function Profile() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 d-flex align-items-center justify-content-center">
-        <div className="text-center">
-          <div className="alert alert-warning" role="alert">
-            <h4 className="alert-heading">⚠️ Profile Not Found</h4>
-            <p>Unable to load profile data. Please try refreshing the page.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
+    <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
       <div className="container py-4">
         <ProfileHeader
           user={user}
-          onUserUpdated={(updatedUser) => setUser(updatedUser)}
+          isOwnProfile={true}
+          currentUser={user}
+          onUserUpdated={handleUserUpdated}
           onPostCreated={handlePostCreated}
         />
         
@@ -122,8 +132,10 @@ export default function Profile() {
             activeTab={activeTab}
             onTabChange={setActiveTab}
             userPosts={userPosts}
+            userGroups={userGroups}
             onLikePost={handleLikePost}
             currentUser={user}
+            onGroupJoined={handleGroupJoined}
             onPostDeleted={(deletedPostId) => {
               setUserPosts(prevPosts => prevPosts.filter(post => post._id !== deletedPostId));
             }}

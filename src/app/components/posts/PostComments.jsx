@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { useAuth } from "@/app/hooks/useAuth"
 
 export default function PostComments({postId, comments}) {
+    const {user, token} = useAuth()
     const [commentsData, setCommentsData] = useState(comments || [])
     const [newComment, setNewComment] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -19,10 +21,6 @@ export default function PostComments({postId, comments}) {
 
         setIsLoading(true)
         try {
-            const token = localStorage.getItem('token')
-            console.log('Adding comment to postId:', postId)
-            console.log('Token:', token)
-            
             const response = await axios.post(
                 `http://localhost:3001/api/posts/${postId}/comments`,
                 { text: newComment.trim() },
@@ -32,16 +30,13 @@ export default function PostComments({postId, comments}) {
                     }
                 }
             )
-            console.log('Comment response:', response.data)
             
-            // FIX: Backend returns single comment, we need to fetch updated post
             const updatedPostResponse = await axios.get(`http://localhost:3001/api/posts/${postId}`)
             setCommentsData(updatedPostResponse.data.comments)
             setNewComment("")
             
         } catch (error) {
             console.error('Error adding comment:', error)
-            console.error('Response:', error.response?.data)
             alert('Failed to add comment. Please try again.')
         } finally {
             setIsLoading(false)
@@ -53,10 +48,7 @@ export default function PostComments({postId, comments}) {
             return
         }
 
-        try {
-            const token = localStorage.getItem('token')
-            console.log('Deleting comment:', commentId, 'from post:', postId)
-            
+        try { 
             const response = await axios.delete(
                 `http://localhost:3001/api/posts/${postId}/comments/${commentId}`,
                 {
@@ -75,8 +67,6 @@ export default function PostComments({postId, comments}) {
         }
     }
 
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
-
     return (
         <div className="mt-3">
             {/* Comments Toggle */}
@@ -92,26 +82,27 @@ export default function PostComments({postId, comments}) {
                     {/* Existing Comments */}
                     <div className="mb-3" style={{maxHeight: '200px', overflowY: 'auto'}}>
                         {commentsData.length === 0 ? (
-                            <small className="text-muted">No comments yet.</small>
+                            <small className="text-white">No comments yet.</small>
                         ) : (
                             commentsData.map(comment => (
                                 <div key={comment._id} className="border-bottom pb-2 mb-2">
                                     <div className="d-flex justify-content-between align-items-start">
                                         <div className="flex-grow-1">
-                                            {/* FIX: Handle both 'user' and 'author' fields */}
-                                            <strong className="small">
+                                            <strong className="small text-white">
                                                 {comment.user?.username || comment.user?.name || 
                                                  comment.author?.username || comment.author?.name || 
                                                  'Unknown User'}
                                             </strong>
-                                            <p className="mb-1 small">{comment.text}</p>
-                                            <small className="text-muted">
+                                            <p className="mb-1 small text-white">{comment.text}</p>
+                                            <small className="text-white">
                                                 {new Date(comment.createdAt).toLocaleString()}
                                             </small>
                                         </div>
-                                        {/* FIX: Check both user and author fields for delete permission */}
-                                        {(currentUser._id === comment.user?._id || 
-                                          currentUser._id === comment.author?._id) && (
+                                        {/* Use user from useAuth instead of currentUser */}
+                                        {(user?._id === comment.user?._id || 
+                                          user?._id === comment.author?._id || 
+                                          user?.id === comment.user?.id || 
+                                          user?.id === comment.author?.id) && (
                                             <button 
                                                 className="btn btn-sm btn-outline-danger ms-2"
                                                 onClick={() => handleDeleteComment(comment._id)}
