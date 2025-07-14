@@ -76,11 +76,7 @@ src/
 
 2. **Install dependencies**
    ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
+   npm install axios jwt-decode createContext io socket.io-client bootstrap bootstrap-icons d3 react-router-dom
    ```
 
 3. **Set up environment variables** (if needed)
