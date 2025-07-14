@@ -79,12 +79,7 @@ src/
    npm install axios jwt-decode createContext io socket.io-client bootstrap bootstrap-icons d3 react-router-dom
    ```
 
-3. **Set up environment variables** (if needed)
-   ```bash
-   cp .env.example .env.local
-   ```
-
-4. **Start the development server**
+3. **Start the development server**
    ```bash
    npm run dev
    # or
@@ -93,7 +88,7 @@ src/
    pnpm dev
    ```
 
-5. **Open your browser**
+4. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 🔧 Configuration
