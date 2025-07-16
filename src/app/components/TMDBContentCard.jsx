@@ -3,6 +3,7 @@
 import React, { useState,useEffect  } from "react";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
+import TrailerSection from "./TMDB/TrailerSection";
 
 export default function TMDBContentCard({ 
   content, 
@@ -363,7 +364,8 @@ export default function TMDBContentCard({
                 View on TMDB
               </button>
             </div>
-          </div>
+        <TrailerSection movieId={content.id} contentType={content.media_type || "movie"} />         
+         </div>
         </div>
       </div>
     </div>

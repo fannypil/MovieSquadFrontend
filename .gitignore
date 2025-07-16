@@ -109,3 +109,10 @@ secrets.json
 # yarn.lock
 # package-lock.json
 # pnpm-lock.yaml
+
+# env files for different environments
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env
