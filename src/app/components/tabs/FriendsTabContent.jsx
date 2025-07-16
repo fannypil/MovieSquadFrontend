@@ -87,6 +87,21 @@ export default function FriendsTabContent({
   const handleRequestsCountUpdate = (count) => {
     setRequestsCount(count);
   };
+  const handleUserSelect = async (user) => {
+  if (!user?._id || !token) return;
+  try {
+    // Send friend request to backend
+    await axios.post(
+      "http://localhost:3001/api/user/friends/request",
+      { recipientId: user._id },
+      { headers: { 'x-auth-token': token } }
+    );
+    alert(`Friend request sent to ${user.username}!`);
+  } catch (error) {
+    const msg = error.response?.data?.message || "Failed to send friend request.";
+    alert(msg);
+  }
+};
 
   const renderContent = () => {
     // For other users, only show their friends list
@@ -181,7 +196,10 @@ export default function FriendsTabContent({
           />
         );
       case "search":
-        return <UserSearch currentUser={currentUser} />;
+        return <UserSearch 
+        currentUser={currentUser}
+        onUserSelect={handleUserSelect}
+      />
       default:
         return null;
     }

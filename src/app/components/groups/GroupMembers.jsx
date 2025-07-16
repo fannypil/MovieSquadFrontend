@@ -24,27 +24,47 @@ export default function GroupMembers({ groupId, currentUser, isCreator }) {
         }
     }, [groupId, token])
 
+    const fetchProfilePictures = async (membersList) => {
+    // Fetch profile for each member in parallel
+    const updatedMembers = await Promise.all(
+        membersList.map(async (member) => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:3001/api/user/profile/${member._id}`,
+                    { headers: { 'x-auth-token': token } }
+                );
+                return { ...member, profilePicture: response.data.profilePicture };
+            } catch (error) {
+                // fallback if error
+                return { ...member, profilePicture: null };
+            }
+        })
+    );
+    setMembers(updatedMembers);
+};
+
     const fetchMembers = async () => {
-        if (!token) return
-        try {
-            setIsLoading(true)
-            setError(null)
-            
-            const response = await axios.get(
-                `http://localhost:3001/api/groups/${groupId}`,
-                { headers: { 'x-auth-token': token } }
-            )
-            
-            console.log('Group details:', response.data)
-            // Extract members from the group object
-            setMembers(response.data.members || [])
-        } catch (error) {
-            console.error('Error fetching members:', error)
-            setError('Failed to load members')
-        } finally {
-            setIsLoading(false)
-        }
+    if (!token) return;
+    try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await axios.get(
+            `http://localhost:3001/api/groups/${groupId}`,
+            { headers: { 'x-auth-token': token } }
+        );
+
+        const basicMembers = response.data.members || [];
+        // Fetch profile pictures after getting members
+        await fetchProfilePictures(basicMembers);
+
+    } catch (error) {
+        console.error('Error fetching members:', error);
+        setError('Failed to load members');
+    } finally {
+        setIsLoading(false);
     }
+};
 
     const fetchPendingRequests = async () => {
         if (!token) return
@@ -235,7 +255,7 @@ export default function GroupMembers({ groupId, currentUser, isCreator }) {
                                     border: '1px solid #444'
                                 }}
                             >
-                                📋 Requests ({pendingRequests.length})
+                                Requests ({pendingRequests.length})
                             </button>
                         </li>
                     )}

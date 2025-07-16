@@ -13,14 +13,6 @@ export default function GroupMembersContent({ group, members, currentUser }) {
     try {
       // TODO: Implement remove member API call
       console.log('Removing member:', memberId, 'from group:', group._id);
-      
-      // Example API call:
-      // await axios.delete(`http://localhost:3001/api/groups/${group._id}/members/${memberId}`, {
-      //   headers: { 'x-auth-token': token }
-      // });
-      
-      // Refresh group data after removal
-      // onMemberRemoved?.(memberId);
     } catch (error) {
       console.error('Error removing member:', error);
     }
