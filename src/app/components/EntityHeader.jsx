@@ -11,6 +11,7 @@ import AuthorizedButton from "./auth/AuthorizedButton"
 import ProfileStats from "./profile/ProfileStats"
 import JoinGroupButton from "./groups/JoinGroupButton"
 import MangeGroupModal from "./groups/MangeGroupModal."
+import { usePermissions } from "../hooks/usePermissions"
 
 
 export default function EntityHeader({ 
@@ -27,6 +28,7 @@ export default function EntityHeader({
 }) {
   const { user: authUser } = useAuth()
   const authenticatedUser = authUser || currentUser
+  const {checkPermission} = usePermissions()
 
   const [showCreatePost, setShowCreatePost] = useState(false)
   const [showEditProfile, setShowEditProfile] = useState(false)
@@ -50,6 +52,10 @@ export default function EntityHeader({
     (member._id || member.id || member) === (authenticatedUser._id || authenticatedUser.id)
   )
   const isGroupCreator = isGroupAdmin // For groups, admin is typically the creator
+
+  const canManageGroup = checkPermission("MANAGE_GROUP", {
+  groupAdminId: groupData?.admin?._id || groupData?.admin?.id
+  });
 
   // Render entity avatar
   const renderEntityAvatar = () => {
@@ -388,13 +394,13 @@ export default function EntityHeader({
         onPostCreated={onPostCreated}
         groupId={isGroup ? (groupId || entity?._id) : undefined}
       />
-      {isGroup && (
+      {isGroup && canManageGroup&&  (
         <MangeGroupModal
             group={groupData}
             isOpen={showManageGroupModal}
             onClose={() => setShowManageGroupModal(false)}
             onGroupUpdated={(updatedGroup) => {
-            setGroupData(updatedGroup); // update local state with new group info
+            setGroupData(updatedGroup); 
             setShowManageGroupModal(false);
           }}
             onGroupDeleted={() => setShowManageGroupModal(false)}

@@ -36,7 +36,8 @@ export const usePermissions = () => {
         return !!user;
       
       case 'MANAGE_GROUP':
-        return isGroupAdmin(context.groupId) || user.role === 'admin';
+        const isGroupAdminUser = context.admin === user._id || context.groupAdminId === user.id;
+        return isGroupAdminUser || user.role === 'admin';
       
       case 'ACCESS_ADMIN_PANEL':
         return hasRole('admin');
