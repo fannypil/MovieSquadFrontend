@@ -69,78 +69,58 @@ export default function SignIn({onLoginSuccess}){
         }
     }
 
-    return(
-        <div className="card p-4 shadow-sm">
-            <h2 className="text-center mb-4">Sign In</h2>
-            
-            {/* Success Message */}
-            {success && (
-                <div className="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Success!</strong> Welcome back to MovieSquad!
-                    <button 
-                        type="button" 
-                        className="btn-close" 
-                        onClick={() => setSuccess(false)}
-                        aria-label="Close"
-                    ></button>
-                </div>
+  return (
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "70vh" }}>
+      <div className="glass-card p-4 shadow-lg" style={{ maxWidth: 400, width: "100%" }}>
+        <h2 className="text-center mb-4 text-white">Sign In</h2>
+        {success && (
+          <div className="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> Welcome back to MovieSquad!
+            <button type="button" className="btn-close" onClick={() => setSuccess(false)} aria-label="Close"></button>
+          </div>
+        )}
+        {errors.general && (
+          <div className="alert alert-danger" role="alert">{errors.general}</div>
+        )}
+        <form onSubmit={handleSignIn}>
+          <div className="form-floating mb-3">
+            <input
+              type="email"
+              className={`form-control bg-dark text-light ${errors.email ? "is-invalid" : ""}`}
+              id="signinEmail"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              autoComplete="username"
+              style={{ border: "1px solid #444" }}
+            />
+            <label htmlFor="signinEmail" className="text-muted">Email address</label>
+            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="password"
+              className={`form-control bg-dark text-light ${errors.password ? "is-invalid" : ""}`}
+              id="signinPassword"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              autoComplete="current-password"
+              style={{ border: "1px solid #444" }}
+            />
+            <label htmlFor="signinPassword" className="text-muted">Password</label>
+            {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+          </div>
+          <button type="submit" className="btn btn-gold w-100" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                Signing In...
+              </>
+            ) : (
+              'Sign In'
             )}
-            
-            {/* General Error Message */}
-            {errors.general && (
-                <div className="alert alert-danger" role="alert">
-                    {errors.general}
-                </div>
-            )}
-            
-            <form onSubmit={handleSignIn}>
-                <div className="form-floating mb-3">
-                    <input
-                        type="email"
-                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                        id="signinEmail"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@example.com"
-                    />
-                    <label htmlFor="signinEmail">Email address</label>
-                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-                </div>
-                
-                <div className="form-floating mb-3">
-                    <input
-                        type="password"
-                        className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                        id="signinPassword"
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <label htmlFor="signinPassword">Password</label>
-                    {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-                </div>
-                
-                <button 
-                    type="submit" 
-                    className="btn btn-primary w-100"
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                            Signing In...
-                        </>
-                    ) : (
-                        'Sign In'
-                    )}
-                </button>
-            </form>
-            
-            <div className="text-center mt-3">
-                <small className="text-muted">
-                    Don't have an account? <a href="#" className="text-decoration-none">Sign up here</a>
-                </small>
-            </div>
-        </div>
-    )
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
