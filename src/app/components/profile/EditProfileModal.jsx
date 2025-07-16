@@ -5,6 +5,10 @@ import axios from "axios"
 import { useAuth } from "@/app/hooks/useAuth"
 import AvatarSelector from "./AvatarSelector"
 
+const GENRES = [
+  "Drama", "Comedy", "Action", "Romance", "Thriller", "Animation", "Mystery", "Sci-Fi", "Fantasy", "Documentary"
+];
+
 export default function EditProfileModal({ isOpen, onClose, currentUser, onUserUpdated }) {
     const { token, updateUser } = useAuth()
     const [formData, setFormData] = useState({
@@ -13,6 +17,7 @@ export default function EditProfileModal({ isOpen, onClose, currentUser, onUserU
         bio: '',
         profilePicture: null
     })
+    const [selectedGenres, setSelectedGenres] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
     const [errors, setErrors] = useState({})
     const [showAvatarSelector, setShowAvatarSelector] = useState(false)
@@ -26,10 +31,45 @@ export default function EditProfileModal({ isOpen, onClose, currentUser, onUserU
                 bio: currentUser.bio || '',
                 profilePicture: currentUser.profilePicture || null
             })
+            setSelectedGenres(currentUser.favoriteGenres || []);
             setErrors({})
             setShowAvatarSelector(false)
         }
     }, [isOpen, currentUser])
+
+     // Handle genre selection
+  const handleGenreToggle = async (genre) => {
+    if (selectedGenres.includes(genre)) {
+      // Remove genre
+      setIsLoading(true);
+      try {
+        await axios.delete(
+          `http://localhost:3001/api/user/me/genres/${encodeURIComponent(genre)}`,
+          { headers: { 'x-auth-token': token } }
+        );
+        setSelectedGenres(prev => prev.filter(g => g !== genre));
+      } catch (err) {
+        alert("Failed to remove genre");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // Add genre
+      setIsLoading(true);
+      try {
+        await axios.put(
+          "http://localhost:3001/api/user/me/genres",
+          { genre },
+          { headers: { 'x-auth-token': token } }
+        );
+        setSelectedGenres(prev => [...prev, genre]);
+      } catch (err) {
+        alert("Failed to add genre");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -277,6 +317,25 @@ export default function EditProfileModal({ isOpen, onClose, currentUser, onUserU
                                     {formData.bio.length}/500 characters
                                 </small>
                             </div>
+                                {/* Favorite Genres */}
+                                <div className="mb-3">
+                                    <label className="form-label text-white">Favorite Genres</label>
+                                    <div className="d-flex flex-wrap gap-2">
+                                    {GENRES.map(genre => (
+                                        <button
+                                        key={genre}
+                                        type="button"
+                                        className={`btn btn-sm ${selectedGenres.includes(genre) ? "btn-warning" : "btn-outline-secondary"}`}
+                                        onClick={() => handleGenreToggle(genre)}
+                                        disabled={isLoading}
+                                        >
+                                        {genre}
+                                        {selectedGenres.includes(genre) && <i className="bi bi-check-lg ms-1"></i>}
+                                        </button>
+                                    ))}
+                                    </div>
+                                    <small className="text-muted">Click to add/remove genres. Changes are saved instantly.</small>
+                                </div>
                         </div>
                         
                         <div className="modal-footer" style={{ borderTop: '1px solid #444' }}>
