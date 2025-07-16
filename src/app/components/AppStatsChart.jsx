@@ -112,10 +112,6 @@ export default function AppStatsChart() {
   return (
     <div className="w-100">
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <h3 className="h5 fw-bold text-white mb-0">
-          <i className="bi bi-bar-chart me-2 text-warning"></i>
-          App Statistics
-        </h3>
         <button
           onClick={fetchStats}
           className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
