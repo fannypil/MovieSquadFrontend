@@ -244,21 +244,7 @@ export default function GroupMembers({ groupId, currentUser, isCreator }) {
                              Members ({members.length})
                         </button>
                     </li>
-                    {isCreator && (
-                        <li className="nav-item">
-                            <button
-                                className={`nav-link ${activeTab === 'requests' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('requests')}
-                                style={{
-                                    backgroundColor: activeTab === 'requests' ? '#ff8c00' : 'transparent',
-                                    color: activeTab === 'requests' ? 'white' : '#ccc',
-                                    border: '1px solid #444'
-                                }}
-                            >
-                                Requests ({pendingRequests.length})
-                            </button>
-                        </li>
-                    )}
+
                 </ul>
             </div>
 
@@ -368,88 +354,6 @@ export default function GroupMembers({ groupId, currentUser, isCreator }) {
                                                     </button>
                                                 </div>
                                             )}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Requests Tab */}
-            {activeTab === 'requests' && isCreator && (
-                <div>
-                    {pendingRequests.length === 0 ? (
-                        <EmptyState 
-                            icon="inbox"
-                            title="No pending requests"
-                            description="No one has requested to join this group yet."
-                            showButton={false}
-                            />
-                    ) : (
-                        <div className="requests-list">
-                            {pendingRequests.map((request, index) => (
-                                <div 
-                                    key={request._id}
-                                    className="card mb-3"
-                                    style={{ backgroundColor: '#2c2c2c', border: '1px solid #444' }}
-                                >
-                                    <div className="card-body">
-                                        <div className="d-flex align-items-center">
-                                            {/* Profile Picture */}
-                                            <div className="me-3">
-                                                <img
-                                                    src={request.profilePicture || "https://via.placeholder.com/50"}
-                                                    alt={request.username}
-                                                    className="rounded-circle"
-                                                    style={{ 
-                                                        width: '50px', 
-                                                        height: '50px',
-                                                        objectFit: 'cover',
-                                                        border: '2px solid #ff8c00'
-                                                    }}
-                                                />
-                                            </div>
-
-                                            {/* Request Info */}
-                                            <div className="flex-grow-1">
-                                                <h6 className="mb-1 text-white">
-                                                    {request.username}
-                                                </h6>
-                                                <p className="mb-1 text-white" style={{ fontSize: '0.9rem' }}>
-                                                    {request.email}
-                                                </p>
-                                                <small className="text-muted">
-                                                    Requested: {new Date(request.requestedAt || Date.now()).toLocaleDateString()}
-                                                </small>
-                                            </div>
-
-                                            {/* Actions */}
-                                            <div className="d-flex gap-2">
-                                                <button
-                                                    className="btn btn-success btn-sm"
-                                                    onClick={() => handleApproveRequest(request._id)}
-                                                    disabled={processingIds.has(request._id)}
-                                                >
-                                                    {processingIds.has(request._id) ? (
-                                                        <span className="spinner-border spinner-border-sm me-1" role="status"></span>
-                                                    ) : (
-                                                        ' Approve'
-                                                    )}
-                                                </button>
-                                                <button
-                                                    className="btn btn-danger btn-sm"
-                                                    onClick={() => handleRejectRequest(request._id)}
-                                                    disabled={processingIds.has(request._id)}
-                                                >
-                                                    {processingIds.has(request._id) ? (
-                                                        <span className="spinner-border spinner-border-sm me-1" role="status"></span>
-                                                    ) : (
-                                                        ' Reject'
-                                                    )}
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import TopGenresChart from '../components/TopGenresChart ';
+import HomeStatsCards from '../components/stats/HomeStatsCards';
 
 export default function Home(){
     const{user,isAuthenticated}= useAuth()
@@ -50,61 +51,8 @@ export default function Home(){
                         )}
                      </div>
                      {/* Stats Cards */}
-                        <div className="row g-4 mb-5">
-                            <div className="col-md-4">
-                                <div className="glass-card h-100 hover-lift rounded">
-                                    <div className="card-body text-center p-4">
-                                        <div className="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                                             style={{
-                                                 width: '48px',
-                                                 height: '48px',
-                                                 background: 'rgba(59, 130, 246, 0.2)'
-                                             }}>
-                                            <i className="bi bi-film text-info"></i>
-                                        </div>
-                                         {/* Movie Reviews Count */}
-                                        <h3 className="h2 fw-bold text-white mb-2">10K+</h3>
-                                        <p className="text-light mb-0">Movie Reviews</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="col-md-4">
-                                <div className="glass-card h-100 hover-lift rounded">
-                                    <div className="card-body text-center p-4">
-                                        <div className="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                                             style={{
-                                                 width: '48px',
-                                                 height: '48px',
-                                                 background: 'rgba(34, 197, 94, 0.2)'
-                                             }}>
-                                            <i className="bi bi-people text-success"></i>
-                                        </div>
-                                        {/* Active Groups Count */}
-                                        <h3 className="h2 fw-bold text-white mb-2">500+</h3>
-                                        <p className="text-light mb-0">Active Groups</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="col-md-4">
-                                <div className="glass-card h-100 hover-lift rounded">
-                                    <div className="card-body text-center p-4">
-                                        <div className="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                                             style={{
-                                                 width: '48px',
-                                                 height: '48px',
-                                                 background: 'rgba(168, 85, 247, 0.2)'
-                                             }}>
-                                            <i className="bi bi-chat-dots text-primary"></i>
-                                        </div>
-                                        {/* Discussions Count */}
-                                        <h3 className="h2 fw-bold text-white mb-2">50K+</h3>
-                                        <p className="text-light mb-0">Discussions</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                     <HomeStatsCards/>
+
                      {/* Features */}
                         <div className="row g-4 mb-5">
                             <div className="col-md-6">
