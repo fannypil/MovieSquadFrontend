@@ -20,17 +20,17 @@ export function useSocket(user, token) {
         setSocket(newSocket)
 
         newSocket.on('connect', () => {
-            console.log('✅ Socket connected')
+            console.log(' Socket connected')
             setIsConnected(true)
         })
 
         newSocket.on('disconnect', () => {
-            console.log('❌ Socket disconnected')
+            console.log(' Socket disconnected')
             setIsConnected(false)
         })
 
         newSocket.on('connect_error', (error) => {
-            console.error('❌ Socket connection error:', error)
+            console.error('Socket connection error:', error)
             setIsConnected(false)
         })
 

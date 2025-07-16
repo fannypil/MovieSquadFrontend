@@ -63,7 +63,7 @@ export default function Notifications() {
     try {
       setIsMarkingAllRead(true)
       await markAllAsRead()
-      console.log('✅ All notifications marked as read successfully!')
+      console.log('All notifications marked as read successfully!')
     } catch (error) {
       console.error('Failed to mark all as read:', error)
     } finally {

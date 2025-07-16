@@ -156,13 +156,13 @@ export default function ProfileSettingsModal({ isOpen, onClose, currentUser }) {
                             }
                             <br/>
                             {settings.showWatchedContent ? 
-                                "✅ Watched movies are visible" : 
-                                "❌ Watched movies are hidden"
+                                "Watched movies are visible" : 
+                                "Watched movies are hidden"
                             }
                             <br/>
                             {settings.showFavorites ? 
-                                "✅ Favorite genres are visible" : 
-                                "❌ Favorite genres are hidden"
+                                "Favorite genres are visible" : 
+                                "Favorite genres are hidden"
                             }
                         </div>
                     </div>

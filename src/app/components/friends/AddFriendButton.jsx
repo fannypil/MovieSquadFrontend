@@ -89,21 +89,18 @@ export default function AddFriendButton({ userId, username, currentStatus = "non
             case "friends":
                 return {
                     text: "Friends",
-                    icon: "✅",
                     className: "btn-success",
                     disabled: false
                 }
             case "sent":
                 return {
                     text: "Request Sent",
-                    icon: "📤",
                     className: "btn-secondary",
                     disabled: true
                 }
             case "pending":
                 return {
                     text: "Accept Request",
-                    icon: "👋",
                     className: "btn-warning",
                     disabled: false
                 }

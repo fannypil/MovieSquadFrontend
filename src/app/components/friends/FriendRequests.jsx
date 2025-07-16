@@ -257,7 +257,7 @@ export default function FriendRequests({ currentUser }) {
                                             {processingIds.has(request._id || request.id) ? (
                                                 <span className="spinner-border spinner-border-sm me-1" role="status"></span>
                                             ) : (
-                                                "✅ Accept"
+                                                "Accept"
                                             )}
                                         </button>
                                         
@@ -270,7 +270,7 @@ export default function FriendRequests({ currentUser }) {
                                             {processingIds.has(request._id || request.id) ? (
                                                 <span className="spinner-border spinner-border-sm me-1" role="status"></span>
                                             ) : (
-                                                "❌ Reject"
+                                                "Reject"
                                             )}
                                         </button>
                                     </div>

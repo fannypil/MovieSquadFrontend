@@ -34,7 +34,7 @@ export default function NotificationItem({
     }
   }
 
-  // ✅ UPDATED: Match backend notification types
+  //  UPDATED: Match backend notification types
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'group_invite':
@@ -99,7 +99,7 @@ export default function NotificationItem({
     }
   }
 
-  // ✅ UPDATED: Generate notification title based on type
+  //  UPDATED: Generate notification title based on type
   const getNotificationTitle = (notification) => {
     const senderName = notification.sender?.username || 'Someone'
     

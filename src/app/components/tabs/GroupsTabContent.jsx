@@ -77,7 +77,7 @@ export default function GroupsTabContent({ currentUser, onViewGroup }) {
           className="btn btn-warning btn-sm"
           onClick={() => setShowCreateGroup(!showCreateGroup)}
         >
-          {showCreateGroup ? '❌ Cancel' : '➕ Create Group'}
+          {showCreateGroup ? ' Cancel' : ' Create Group'}
         </button>
       </div>
 
