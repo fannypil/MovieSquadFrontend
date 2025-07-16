@@ -19,6 +19,7 @@ import DiscoveryPage from './pages/DiscoveryPage';
 import Home from './pages/Home';
 import Feed from './pages/Feed';
 import Notifications from './pages/Notifications';
+import AdminPanel from './pages/AdminPanel';
 
 
 export default function App() {
@@ -154,7 +155,7 @@ export default function App() {
               path="/admin" 
               element={
                 <ProtectedRoute requiredRole="admin">
-                  <div>Admin Panel Component</div>
+                  <AdminPanel />
                 </ProtectedRoute>
               } 
             />
