@@ -255,7 +255,7 @@ export default function MangeGroupModal({ group, isOpen, onClose, onGroupUpdated
                     <li key={item.tmdbId + item.tmdbType} className="list-group-item d-flex align-items-center justify-content-between" style={{ background: "#23272b", color: "#fff" }}>
                       <div>
                         {item.tmdbPosterPath ? (
-                          <img src={item.tmdbPosterPath} alt={item.tmdbTitle} className="me-2" style={{ width: 32, height: 48, objectFit: "cover" }} />
+                          <img src={`https://image.tmdb.org/t/p/w500${item.tmdbPosterPath}`} alt={item.tmdbTitle} className="me-2" style={{ width: 32, height: 48, objectFit: "cover" }} />
                         ) : (
                           <span className="rounded bg-secondary d-inline-flex align-items-center justify-content-center me-2" style={{ width: 32, height: 48 }}>
                             <i className="bi bi-film text-white"></i>
