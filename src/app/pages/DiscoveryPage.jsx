@@ -7,6 +7,7 @@ import TMDBContentCard from "../components/TMDBContentCard";
 import TMDBSearch from "../components/TMDBSearch";
 import EmptyState from "../components/EmptyState";
 import CanvasLoader from "../components/CanvasLoader";
+import TMDBFilter from "../components/TMDB/TMDBFilter";
 
 export default function DiscoveryPage() {
   const { user } = useAuth();
@@ -18,6 +19,14 @@ export default function DiscoveryPage() {
   const [lastSearchQuery, setLastSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false); // Track if user has performed a search
 
+  const [filters, setFilters] = useState({
+  genre: "",
+  year: "",
+  minRating: "",
+  sortBy: "popularity.desc"
+  });
+
+  
   useEffect(() => {
     loadTrendingContent();
   }, [contentType]);
@@ -37,12 +46,31 @@ export default function DiscoveryPage() {
     }
   };
 
-  const handleSearchComplete = async (query, results) => {
-    if (results && results.length > 0) {
-      setSearchResults(results);
-      setLastSearchQuery(query);
-      setHasSearched(true);
-      setActiveTab("search");
+  const runDiscoverySearch = async () => {
+    setIsLoadingTrending(true);
+    try {
+      const params = {
+        type: contentType,
+        page: 1,
+        sort_by: filters.sortBy,
+      };
+      if (filters.genre) params.with_genres = filters.genre;
+      if (filters.year) {
+        if (contentType === "movie") params.primary_release_year = filters.year;
+        if (contentType === "tv") params.first_air_date_year = filters.year;
+      }
+      if (filters.minRating) params.vote_average_gte = filters.minRating;
+
+      const response = await axios.get(`http://localhost:3001/api/tmdb/discover`, {
+        params
+      });
+      setTrendingContent(response.data.results || []);
+      setActiveTab("trending");
+    } catch (error) {
+      console.error("Error during discovery search:", error);
+      setTrendingContent([]);
+    } finally {
+      setIsLoadingTrending(false);
     }
   };
 
@@ -68,6 +96,8 @@ export default function DiscoveryPage() {
       disabled: false // Always enabled now
     }
   ];
+
+  
 
   const renderContent = () => {
     if (activeTab === "search") {
@@ -264,6 +294,17 @@ return (
             </li>
           ))}
         </ul>
+        <TMDBFilter
+          filters={filters}
+          setFilters={setFilters}
+          contentType={contentType}
+        />
+
+        <div className="text-end mb-3">
+          <button className="btn btn-primary" onClick={runDiscoverySearch}>
+            Search with Filters
+          </button>
+        </div>
 
         {/* Content */}
         {renderContent()}
