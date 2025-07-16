@@ -32,12 +32,13 @@ export default function EntityHeader({
   const [showEditProfile, setShowEditProfile] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showManageGroupModal, setShowManageGroupModal] = useState(false);
+  const [groupData, setGroupData] = useState(entity);
 
   // Entity-specific data extraction
   const isGroup = type === "group"
-  const entityName = isGroup ? entity?.name : entity?.username
+  const entityName = isGroup ? groupData?.name : entity?.username;
   const entityEmail = isGroup ? `Created by ${entity?.admin?.username || 'Unknown'}` : entity?.email
-  const entityBio = isGroup ? entity?.description : entity?.bio
+  const entityBio = isGroup ? groupData?.description : entity?.bio;
   const entityAvatar = entity?.profilePicture || entity?.avatar
 
   // Group-specific data
@@ -293,6 +294,11 @@ export default function EntityHeader({
     )
   }
 
+  const handleGroupUpdated = (updatedGroup) => {
+    setGroupData(updatedGroup); // Update local state with new group data
+    setShowManageGroupModal(false);
+  };
+
   return (
     <>
       <div className="glass-card mb-4">
@@ -384,17 +390,14 @@ export default function EntityHeader({
       />
       {isGroup && (
         <MangeGroupModal
-          group={entity}
-          isOpen={showManageGroupModal}
-          onClose={() => setShowManageGroupModal(false)}
-          onGroupUpdated={(updatedGroup) => {
-            // Optionally update group info in parent or refetch
+            group={groupData}
+            isOpen={showManageGroupModal}
+            onClose={() => setShowManageGroupModal(false)}
+            onGroupUpdated={(updatedGroup) => {
+            setGroupData(updatedGroup); // update local state with new group info
             setShowManageGroupModal(false);
           }}
-          onGroupDeleted={() => {
-            setShowManageGroupModal(false);
-            // Optionally redirect or update parent state
-          }}
+            onGroupDeleted={() => setShowManageGroupModal(false)}
         />
       )}
     </>

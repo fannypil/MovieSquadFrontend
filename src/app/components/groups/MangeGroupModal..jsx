@@ -89,7 +89,7 @@ export default function MangeGroupModal({ group, isOpen, onClose, onGroupUpdated
         form,
         { headers: { "x-auth-token": token } }
       );
-      onGroupUpdated?.(res.data);
+      onGroupUpdated?.(res.data); // Pass updated group to parent
       alert("Group updated!");
       onClose();
     } catch (e) {
