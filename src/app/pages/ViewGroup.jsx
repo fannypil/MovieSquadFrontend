@@ -10,6 +10,7 @@ import PostsTabContent from "../components/tabs/PostsTabContent"
 import GroupMembers from "../components/groups/GroupMembers"
 import GroupSharedWatchlist from "../components/groups/GroupSharedWatchlist"
 import GroupStatistics from "../components/groups/GroupStatistics"
+import CanvasLoader from "../components/CanvasLoader"
 
 export default function ViewGroup() {
   const { groupId } = useParams()
@@ -221,12 +222,7 @@ export default function ViewGroup() {
           </div>
 
           {/* Content Skeleton */}
-          <div className="text-center py-5">
-            <div className="spinner-border text-warning mb-3" style={{ width: '3rem', height: '3rem' }}>
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <h5 className="text-white">Loading group...</h5>
-          </div>
+          <CanvasLoader fullscreen={true} text="Loading group..." />
         </div>
       </div>
     )

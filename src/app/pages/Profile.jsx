@@ -3,6 +3,7 @@ import axios from "axios";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import ProfileTabs from "../components/profile/ProfileTabs";
 import { useAuth } from "../hooks/useAuth";
+import CanvasLoader from "../components/CanvasLoader";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("posts");
@@ -103,18 +104,10 @@ export default function Profile() {
   }
 
   if (isLoading) {
-    return (
-      <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
-        <div className="text-center">
-          <div className="spinner-border text-warning mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <h5 className="text-white">Loading your profile...</h5>
-          <p className="text-muted">Please wait while we fetch your data</p>
-        </div>
-      </div>
-    );
-  }
+  return (
+    <CanvasLoader fullscreen={true} text="Loading your profile..." />
+  );
+}
 
   return (
     <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>

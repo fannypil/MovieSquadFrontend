@@ -8,6 +8,7 @@ import axios from "axios"
 import ConversationList from "../components/chat/ConversationList"
 import ChatWindow from "../components/chat/ChatWindow"
 import NewConversationModal from "../components/chat/NewConversationModal"
+import CanvasLoader from "../components/CanvasLoader"
 
 export default function Chat() {
     const [selectedConversation, setSelectedConversation] = useState(null)
@@ -275,17 +276,7 @@ export default function Chat() {
     // Show loading until currentUser is available
     if (isLoading || !stableUser || !isAuthenticated) {
           return (
-            <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
-                <div className="text-center">
-                    <div className="spinner-border text-warning mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
-                    <h5 className="text-white">Loading your messages...</h5>
-                    <p className="text-muted">
-                        {!stableUser ? 'Loading user data...' : 'Connecting to chat...'}
-                    </p>
-                </div>
-            </div>
+         <CanvasLoader fullscreen={true} text="Loading your messages..." />
         )
     }
 

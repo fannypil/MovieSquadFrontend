@@ -6,6 +6,7 @@ import GroupList from "../components/groups/GroupList"
 import CreateGroupForm from "../components/groups/CreateGroupForm" 
 import EmptyState from "../components/EmptyState"
 import { useAuth } from "../hooks/useAuth"
+import CanvasLoader from "../components/CanvasLoader"
 
 export default function GroupListPage({ defaultTab = "discover", isEmbedded = false, 
   currentUser: propCurrentUser,onViewGroup,onGroupsCountChange}) {    
@@ -155,15 +156,7 @@ export default function GroupListPage({ defaultTab = "discover", isEmbedded = fa
     // Loading state
     if (isLoading) {
        return (
-             <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
-               <div className="text-center">
-                 <div className="spinner-border text-warning mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-                   <span className="visually-hidden">Loading...</span>
-                 </div>
-                 <h5 className="text-white">Loading Groups Page...</h5>
-                 <p className="text-muted">Please wait while we fetch your data</p>
-               </div>
-             </div>
+           <CanvasLoader fullscreen={true} text="Loading groups..." />
            );
     }
     // Error state

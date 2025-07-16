@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import TMDBContentCard from "../components/TMDBContentCard";
 import TMDBSearch from "../components/TMDBSearch";
 import EmptyState from "../components/EmptyState";
+import CanvasLoader from "../components/CanvasLoader";
 
 export default function DiscoveryPage() {
   const { user } = useAuth();
@@ -148,12 +149,7 @@ export default function DiscoveryPage() {
     // Trending tab
     if (isLoadingTrending) {
       return (
-        <div className="text-center py-5">
-          <div className="spinner-border text-warning mb-3" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="text-white">Loading trending content...</p>
-        </div>
+      <CanvasLoader fullscreen={true} text="Loading trending content..." />
       );
     }
 

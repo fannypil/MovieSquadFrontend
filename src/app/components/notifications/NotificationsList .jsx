@@ -3,6 +3,7 @@
 import React from 'react'
 import NotificationItem from './NotificationItem'
 import EmptyState from '../EmptyState'
+import CanvasLoader from '../CanvasLoader'
 
 export default function NotificationsList({ 
   notifications, 
@@ -15,13 +16,7 @@ export default function NotificationsList({
   
   if (isLoading) {
     return (
-      <div className="text-center py-5">
-        <div className="spinner-border text-warning mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-          <span className="visually-hidden">Loading notifications...</span>
-        </div>
-        <h5 className="text-white">Loading your notifications...</h5>
-        <p className="text-muted">Please wait while we fetch your latest updates</p>
-      </div>
+      <CanvasLoader fullscreen={true} text="Loading your notifications..." />
     )
   }
 

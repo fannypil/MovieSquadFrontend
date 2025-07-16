@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import TopGenresChart from "../components/TopGenresChart ";
 import AppStatsChart from "../components/AppStatsChart";
+import CanvasLoader from "../components/CanvasLoader";
 
 export default function AdminPanel() {
   const { token, user } = useAuth();
@@ -96,14 +97,11 @@ export default function AdminPanel() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="container py-5 text-center">
-        <span className="spinner-border"></span>
-        <div>Loading admin panel...</div>
-      </div>
-    );
-  }
+ if (loading) {
+  return (
+    <CanvasLoader fullscreen={true} text="Loading admin panel..." />
+  );
+}
 
   return (
     <div className="container-fluid py-4">

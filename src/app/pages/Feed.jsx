@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import PostList from '../components/posts/PostList';
 import AddPostModal from '../components/posts/AddPostModal';
 import EmptyState from '../components/EmptyState';
+import CanvasLoader from '../components/CanvasLoader';
 
 
 export default function Feed() {
@@ -178,16 +179,7 @@ export default function Feed() {
               </div>
             </div>
 
-            {/* Loading State */}
-            {isLoading && (
-              <div className="text-center py-5">
-                <div className="spinner-border text-warning mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <h5 className="text-white">Loading your feed...</h5>
-                <p className="text-muted">Fetching the latest posts from your friends</p>
-              </div>
-            )}
+            {isLoading && <CanvasLoader fullscreen={true} text="Loading your feed..."/>}
 
             {/* Error State */}
             {error && !isLoading && (
