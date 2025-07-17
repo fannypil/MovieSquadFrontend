@@ -1,13 +1,52 @@
 "use client"
 
 import React, { useState } from 'react'
+import axios from "axios";
+import { useAuth } from '@/app/hooks/useAuth'
 
 export default function NotificationItem({ 
   notification, 
   onMarkAsRead, 
-  onDelete 
+  onDelete,
+  onInvitationAction
 }) {
   const [isProcessing, setIsProcessing] = useState(false)
+  const [actionStatus, setActionStatus] = useState(null)
+  const {token} =useAuth()
+
+ const handleAccept = async () => {
+  setIsProcessing(true);
+  try {
+    await axios.put(
+      `http://localhost:3001/api/groups/invitations/${notification._id}/accept`,
+      {},
+      { headers: { "x-auth-token": token } }
+    );
+    setActionStatus("accepted");
+    if (onInvitationAction) onInvitationAction(notification._id);
+  } catch (error) {
+    alert("Failed to accept invitation.");
+  } finally {
+    setIsProcessing(false);
+  }
+};
+
+const handleReject = async () => {
+  setIsProcessing(true);
+  try {
+    await axios.put(
+      `http://localhost:3001/api/groups/invitations/${notification._id}/reject`,
+      {},
+      { headers: { "x-auth-token": token } }
+    );
+    setActionStatus("rejected");
+    if (onInvitationAction) onInvitationAction(notification._id);
+  } catch (error) {
+    alert("Failed to reject invitation.");
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   const handleMarkAsRead = async () => {
     if (notification.read || isProcessing) return
@@ -66,7 +105,7 @@ export default function NotificationItem({
     }
   }
 
-  // ✅ UPDATED: Match backend notification types  
+  // UPDATED: Match backend notification types  
   const getNotificationColor = (type) => {
     switch (type) {
       case 'group_invite':
@@ -255,6 +294,35 @@ export default function NotificationItem({
             )}
           </div>
         </div>
+        {/* Accept/Reject buttons for group_invite */}
+        {notification.type === "group_invite" && (
+          <div className="mt-2 d-flex gap-2">
+            {actionStatus === "accepted" && (
+              <span className="text-success fw-semibold">You joined the group!</span>
+            )}
+            {actionStatus === "rejected" && (
+              <span className="text-danger fw-semibold">You declined the invitation.</span>
+            )}
+            {!actionStatus && (
+              <>
+                <button
+                  className="btn btn-success btn-sm"
+                  onClick={handleAccept}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "..." : "Accept"}
+                </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={handleReject}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "..." : "Reject"}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

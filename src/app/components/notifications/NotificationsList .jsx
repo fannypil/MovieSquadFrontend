@@ -11,7 +11,8 @@ export default function NotificationsList({
   error, 
   onMarkAsRead, 
   onDelete, 
-  onRetry 
+  onRetry,
+  onInvitationAction
 }) {
   
   if (isLoading) {
@@ -55,6 +56,7 @@ export default function NotificationsList({
           notification={notification}
           onMarkAsRead={onMarkAsRead}
           onDelete={onDelete}
+          onInvitationAction={onInvitationAction}
         />
       ))}
     </div>

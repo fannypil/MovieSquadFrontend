@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useNotifications } from '../hooks/useNotifications'
@@ -22,6 +22,17 @@ export default function Notifications() {
   
   const [filter, setFilter] = useState('all') // 'all', 'unread', 'read'
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false)
+  const [localNotifications, setLocalNotifications] = useState([]);
+
+  useEffect(() => {
+    setLocalNotifications(notifications);
+  }, [notifications]);
+
+  const handleInvitationAction = (notificationId) => {
+    setLocalNotifications(prev =>
+      prev.filter(n => n._id !== notificationId)
+    );
+  };
 
   // Redirect if not authenticated
   if (!user || !token) {
@@ -258,6 +269,7 @@ export default function Notifications() {
           onMarkAsRead={markAsRead}
           onDelete={deleteNotification}
           onRetry={refetch}
+          onInvitationAction={handleInvitationAction}
         />
       </div>
     </div>
