@@ -40,7 +40,7 @@ export default function ProfileTabs({
     favoriteMovies: currentUser?.favoriteMovies || [],
     watchedContent: currentUser?.watchedContent || []
   };
-
+console.log("ProfileTabs rendered, activeTab:", activeTab, "isGroupView:", isGroupView);
   // Different tabs for group view vs profile view
   const tabs = isGroupView ? [
     {
@@ -72,7 +72,6 @@ export default function ProfileTabs({
       id: "friends",
       label: "Friends",
       icon: <i className="bi bi-people"></i>, 
-      count: isViewingOtherUser ? safeFriends.length : (currentUser?.friends?.length || 0)
     },
     {
       id: "groups",
@@ -108,6 +107,7 @@ export default function ProfileTabs({
             />
           );
         case "members":
+            console.log("Rendering members tab");
           return (
             <GroupMembersContent
               group={groupData?.group}
