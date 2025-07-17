@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
@@ -77,10 +77,9 @@ export default function AdminPanel() {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     setActionLoading(true);
     try {
-      await axios.delete(
-        `http://localhost:3001/api/admin/users/${userId}`,
-        { headers: { "x-auth-token": token } }
-      );
+      await axios.delete(`http://localhost:3001/api/admin/users/${userId}`, {
+        headers: { "x-auth-token": token },
+      });
       setUsers((prev) => prev.filter((u) => u._id !== userId));
     } catch (err) {
       alert("Failed to delete user");
@@ -97,11 +96,9 @@ export default function AdminPanel() {
     );
   }
 
- if (loading) {
-  return (
-    <CanvasLoader fullscreen={true} text="Loading admin panel..." />
-  );
-}
+  if (loading) {
+    return <CanvasLoader fullscreen={true} text="Loading admin panel..." />;
+  }
 
   return (
     <div className="container-fluid py-4">
@@ -110,8 +107,9 @@ export default function AdminPanel() {
         <div className="col-lg-7 mb-4">
           <div className="card glass-card">
             <div className="card-header d-flex justify-content-between align-items-center">
-                <h3 className="h5 fw-bold text-white mb-0">
-                  <i class="bi bi-people me-2 text-warning"></i> Users</h3>
+              <h3 className="h5 fw-bold text-white mb-0">
+                <i class="bi bi-people me-2 text-warning"></i> Users
+              </h3>
               <span className="badge bg-info">{users.length} total</span>
             </div>
             <div className="card-body p-0">
@@ -130,7 +128,10 @@ export default function AdminPanel() {
                     <tr key={u._id}>
                       <td>
                         <img
-                          src={u.profilePicture || "https://www.w3schools.com/howto/img_avatar.png"}
+                          src={
+                            u.profilePicture ||
+                            "https://www.w3schools.com/howto/img_avatar.png"
+                          }
                           alt={u.username}
                           className="rounded-circle"
                           style={{ width: 40, height: 40, objectFit: "cover" }}
@@ -139,7 +140,15 @@ export default function AdminPanel() {
                       <td>{u.username}</td>
                       <td>{u.email}</td>
                       <td>
-                        <span className={`badge bg-${u.role === "admin" ? "warning" : u.role === "groupAdmin" ? "info" : "secondary"}`}>
+                        <span
+                          className={`badge bg-${
+                            u.role === "admin"
+                              ? "warning"
+                              : u.role === "groupAdmin"
+                              ? "info"
+                              : "secondary"
+                          }`}
+                        >
                           {u.role}
                         </span>
                       </td>
@@ -223,7 +232,9 @@ export default function AdminPanel() {
                         />
                       </div>
                       <div className="mb-2">
-                        <label className="form-label">Profile Picture URL</label>
+                        <label className="form-label">
+                          Profile Picture URL
+                        </label>
                         <input
                           type="text"
                           name="profilePicture"
@@ -263,14 +274,15 @@ export default function AdminPanel() {
         <div className="col-lg-5">
           <div className="card glass-card mb-4">
             <div className="card-header">
-             <h3 className="h5 fw-bold text-white mb-0">
-                    <i className="bi bi-bar-chart-line me-2 text-warning"></i> App Statistics
-                </h3>
+              <h3 className="h5 fw-bold text-white mb-0">
+                <i className="bi bi-bar-chart-line me-2 text-warning"></i> App
+                Statistics
+              </h3>
             </div>
             <div className="card-body">
               {stats && <AppStatsChart stats={stats} />}
-                    <TopGenresChart />
-              </div>
+              <TopGenresChart />
+            </div>
           </div>
         </div>
       </div>

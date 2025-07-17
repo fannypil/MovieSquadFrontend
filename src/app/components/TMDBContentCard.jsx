@@ -1,34 +1,37 @@
-"use client"
+"use client";
 
-import React, { useState,useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import TrailerSection from "./TMDB/TrailerSection";
 
-export default function TMDBContentCard({ 
-  content, 
+export default function TMDBContentCard({
+  content,
   variant = "discovery", // "discovery" | "favorite" | "watched"
   onRemove,
   onAddToFavorites,
-  onAddToWatched 
+  onAddToWatched,
 }) {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isWatched, setIsWatched] = useState(false);
 
-
   const title = content.title || content.name;
   const releaseDate = content.release_date || content.first_air_date;
-  const mediaType = content.media_type || content.tmdbType || 
-                   (content.title && !content.name ? 'movie' : 'tv');
-  
-  const posterUrl = content.poster_path || content.posterPath
-    ? `https://image.tmdb.org/t/p/w500${content.poster_path || content.posterPath}`
-    : null;
+  const mediaType =
+    content.media_type ||
+    content.tmdbType ||
+    (content.title && !content.name ? "movie" : "tv");
 
+  const posterUrl =
+    content.poster_path || content.posterPath
+      ? `https://image.tmdb.org/t/p/w500${
+          content.poster_path || content.posterPath
+        }`
+      : null;
 
-    useEffect(() => {
+  useEffect(() => {
     checkUserStatus();
   }, [content.id, user]);
 
@@ -36,89 +39,92 @@ export default function TMDBContentCard({
     if (!user || !token) return;
 
     try {
-      const response = await axios.get(
-        "http://localhost:3001/api/user/me",
-        { headers: { "x-auth-token": token } }
-      );
+      const response = await axios.get("http://localhost:3001/api/user/me", {
+        headers: { "x-auth-token": token },
+      });
 
       const userFavorites = response.data.favoriteMovies || [];
       const userWatched = response.data.watchedContent || [];
 
       // Check if current content is in favorites
-      setIsFavorited(userFavorites.some(fav => fav.tmdbId === content.id));
-      
+      setIsFavorited(userFavorites.some((fav) => fav.tmdbId === content.id));
+
       // Check if current content is in watched list
-      setIsWatched(userWatched.some(watched => watched.tmdbId === content.id));
+      setIsWatched(
+        userWatched.some((watched) => watched.tmdbId === content.id)
+      );
     } catch (error) {
       console.error("Error checking user status:", error);
     }
   };
 
   const handleAddToFavorites = async () => {
-    if (isLoading||isFavorited) return;
+    if (isLoading || isFavorited) return;
     setIsLoading(true);
-     console.log('Adding to favorites:', {
-    tmdbId: content.id,
-    title: title,
-    tmdbType: mediaType,
-    posterPath: content.poster_path || ''
-  });
-
+    console.log("Adding to favorites:", {
+      tmdbId: content.id,
+      title: title,
+      tmdbType: mediaType,
+      posterPath: content.poster_path || "",
+    });
 
     try {
-    await axios.put(
-      "http://localhost:3001/api/user/me/favorite-movies",
-      {
-        tmdbId: content.id,
-        title: title,
-        tmdbType: mediaType,
-        posterPath: content.poster_path || ''
-      },
-      { 
-        headers: { 
-          "x-auth-token": token,
-          "Content-Type": "application/json"
-        } 
-      }
-    )
-  
-    setIsFavorited(true);
+      await axios.put(
+        "http://localhost:3001/api/user/me/favorite-movies",
+        {
+          tmdbId: content.id,
+          title: title,
+          tmdbType: mediaType,
+          posterPath: content.poster_path || "",
+        },
+        {
+          headers: {
+            "x-auth-token": token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setIsFavorited(true);
       if (onAddToFavorites) onAddToFavorites(content);
       alert(` ${title} added to favorites!`);
-   
-  } catch (error) {
+    } catch (error) {
       console.error("Error adding to favorites:", error);
-    alert(error.response?.data?.message || error.response?.data?.msg || "Failed to add to favorites");
+      alert(
+        error.response?.data?.message ||
+          error.response?.data?.msg ||
+          "Failed to add to favorites"
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleAddToWatched = async () => {
-      console.log('=== handleAddToWatched START ===');
+    console.log("=== handleAddToWatched START ===");
 
-    console.log('Adding to watched:', {
+    console.log("Adding to watched:", {
       tmdbId: content.id,
       title: title,
       tmdbType: mediaType,
-      posterPath: content.poster_path || ''
+      posterPath: content.poster_path || "",
     });
-    if (isLoading||isWatched) return;
+    if (isLoading || isWatched) return;
     setIsLoading(true);
 
     try {
-       await axios.put(
-      "http://localhost:3001/api/user/me/watched",
-      {
-        tmdbId: content.id,
-        tmdbType: mediaType,
-        title: title,
-        posterPath: content.poster_path || ''
-      },
-      { headers: { "x-auth-token": token } }
-    );
-    
-      setIsWatched(true)
+      await axios.put(
+        "http://localhost:3001/api/user/me/watched",
+        {
+          tmdbId: content.id,
+          tmdbType: mediaType,
+          title: title,
+          posterPath: content.poster_path || "",
+        },
+        { headers: { "x-auth-token": token } }
+      );
+
+      setIsWatched(true);
 
       if (onAddToWatched) onAddToWatched(content);
       alert(`${title} marked as watched!`);
@@ -130,19 +136,21 @@ export default function TMDBContentCard({
     }
   };
 
- const handleRemoveFavorite = async () => {
+  const handleRemoveFavorite = async () => {
     if (!window.confirm(`Remove "${title}" from your favorites?`)) return;
-    
+
     if (isLoading) return;
     setIsLoading(true);
 
     try {
       await axios.delete(
-      `http://localhost:3001/api/user/me/favorite-movies/${content.tmdbId || content.id}`,
+        `http://localhost:3001/api/user/me/favorite-movies/${
+          content.tmdbId || content.id
+        }`,
         { headers: { "x-auth-token": token } }
       );
-            setIsFavorited(false);
-      
+      setIsFavorited(false);
+
       if (onRemove) onRemove(content.tmdbId || content.id);
       alert(`${title} removed from favorites!`);
     } catch (error) {
@@ -152,20 +160,22 @@ export default function TMDBContentCard({
       setIsLoading(false);
     }
   };
- const handleRemoveWatched = async () => {
+  const handleRemoveWatched = async () => {
     if (!window.confirm(`Remove "${title}" from your watched list?`)) return;
-    
+
     if (isLoading) return;
     setIsLoading(true);
 
     try {
       await axios.delete(
-        `http://localhost:3001/api/user/me/watched/${content.tmdbId || content.id}/${mediaType}`,
-              { headers: { "x-auth-token": token } }
+        `http://localhost:3001/api/user/me/watched/${
+          content.tmdbId || content.id
+        }/${mediaType}`,
+        { headers: { "x-auth-token": token } }
       );
-      
+
       setIsWatched(false);
-      
+
       if (onRemove) onRemove(content.tmdbId || content.id);
       alert(`${title} removed from watched list!`);
     } catch (error) {
@@ -185,7 +195,10 @@ export default function TMDBContentCard({
   };
   if (!user || !token) {
     return (
-      <div className="card mb-3" style={{ backgroundColor: '#2c2c2c', border: '1px solid #444' }}>
+      <div
+        className="card mb-3"
+        style={{ backgroundColor: "#2c2c2c", border: "1px solid #444" }}
+      >
         <div className="card-body text-center">
           <p className="text-muted">Please log in to interact with content</p>
         </div>
@@ -194,30 +207,31 @@ export default function TMDBContentCard({
   }
 
   return (
-    <div className="card mb-3" style={{ border: '1px solid #444' }}>
+    <div className="card mb-3" style={{ border: "1px solid #444" }}>
       <div className="card-body">
         <div className="row">
           {/* Poster/Icon */}
           <div className="col-auto">
-            <div 
+            <div
               className="d-flex align-items-center justify-content-center rounded"
-              style={{ 
-                width: '80px', 
-                height: '120px', 
-                backgroundColor: '#3c3c3c',
-                border: '1px solid #555',
-                backgroundImage: posterUrl ? `url(${posterUrl})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
+              style={{
+                width: "80px",
+                height: "120px",
+                backgroundColor: "#3c3c3c",
+                border: "1px solid #555",
+                backgroundImage: posterUrl ? `url(${posterUrl})` : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
             >
               {!posterUrl && (
                 <div className="text-center">
-                  <i className="bi bi-camera-reels" style={{ fontSize: '2rem', color: '#666' }}></i>
+                  <i
+                    className="bi bi-camera-reels"
+                    style={{ fontSize: "2rem", color: "#666" }}
+                  ></i>
                   <br />
-                  <small className="text-muted">
-                    #{content.id}
-                  </small>
+                  <small className="text-muted">#{content.id}</small>
                 </div>
               )}
             </div>
@@ -228,16 +242,15 @@ export default function TMDBContentCard({
             <div className="d-flex justify-content-between align-items-start">
               <div className="flex-grow-1">
                 <h5 className="card-title text-white mb-2">{title}</h5>
-                
+
                 {content.overview && (
-                  <p className="text-white mb-2" style={{ fontSize: '0.9rem' }}>
-                    {content.overview.length > 150 
-                      ? `${content.overview.substring(0, 150)}...` 
-                      : content.overview
-                    }
+                  <p className="text-white mb-2" style={{ fontSize: "0.9rem" }}>
+                    {content.overview.length > 150
+                      ? `${content.overview.substring(0, 150)}...`
+                      : content.overview}
                   </p>
                 )}
-                
+
                 <div className="d-flex flex-wrap gap-2 mb-3">
                   {(variant === "favorite" || isFavorited) && (
                     <span className="badge bg-danger">
@@ -245,19 +258,23 @@ export default function TMDBContentCard({
                       FAVORITE
                     </span>
                   )}
-                  
-                   {(variant === "watched" || isWatched) && (
+
+                  {(variant === "watched" || isWatched) && (
                     <span className="badge bg-success">
                       <i className="bi bi-check-circle me-1"></i>
                       WATCHED
                     </span>
                   )}
-                  
+
                   <span className="badge bg-info">
-                    <i className={`bi ${mediaType === 'tv' ? 'bi-tv' : 'bi-film'} me-1`}></i>
-                    {mediaType === 'tv' ? 'TV SHOW' : 'MOVIE'}
+                    <i
+                      className={`bi ${
+                        mediaType === "tv" ? "bi-tv" : "bi-film"
+                      } me-1`}
+                    ></i>
+                    {mediaType === "tv" ? "TV SHOW" : "MOVIE"}
                   </span>
-                  
+
                   {releaseDate && (
                     <span className="badge bg-secondary">
                       <i className="bi bi-calendar me-1"></i>
@@ -272,9 +289,9 @@ export default function TMDBContentCard({
             <div className="d-flex gap-2 flex-wrap">
               {variant === "discovery" && (
                 <>
-           {/*  Dynamic favorite button based on state */}
+                  {/*  Dynamic favorite button based on state */}
                   {!isFavorited ? (
-                    <button 
+                    <button
                       className="btn btn-outline-danger btn-sm"
                       onClick={handleAddToFavorites}
                       disabled={isLoading}
@@ -287,7 +304,7 @@ export default function TMDBContentCard({
                       Add to Favorites
                     </button>
                   ) : (
-                    <button 
+                    <button
                       className="btn btn-danger btn-sm"
                       onClick={handleRemoveFavorite}
                       disabled={isLoading}
@@ -299,10 +316,10 @@ export default function TMDBContentCard({
                       )}
                     </button>
                   )}
-                  
+
                   {/*  Dynamic watched button based on state */}
                   {!isWatched ? (
-                    <button 
+                    <button
                       className="btn btn-outline-success btn-sm"
                       onClick={handleAddToWatched}
                       disabled={isLoading}
@@ -315,7 +332,7 @@ export default function TMDBContentCard({
                       Mark as Watched
                     </button>
                   ) : (
-                    <button 
+                    <button
                       className="btn btn-success btn-sm"
                       onClick={handleRemoveWatched}
                       disabled={isLoading}
@@ -330,9 +347,9 @@ export default function TMDBContentCard({
                   )}
                 </>
               )}
-              
+
               {(variant === "favorite" || variant === "watched") && (
-                <button 
+                <button
                   className="btn btn-outline-danger btn-sm"
                   onClick={handleRemove}
                   disabled={isLoading}
@@ -345,18 +362,18 @@ export default function TMDBContentCard({
                   Remove
                 </button>
               )}
-              
-             <button 
+
+              <button
                 className="btn btn-outline-info btn-sm"
                 onClick={() => {
-                  console.log('Opening TMDB link:', {
+                  console.log("Opening TMDB link:", {
                     mediaType,
                     id: content.id,
-                    url: `https://www.themoviedb.org/${mediaType}/${content.id}`
+                    url: `https://www.themoviedb.org/${mediaType}/${content.id}`,
                   });
                   window.open(
-                    `https://www.themoviedb.org/${mediaType}/${content.id}`, 
-                    '_blank'
+                    `https://www.themoviedb.org/${mediaType}/${content.id}`,
+                    "_blank"
                   );
                 }}
               >
@@ -364,8 +381,11 @@ export default function TMDBContentCard({
                 View on TMDB
               </button>
             </div>
-        <TrailerSection movieId={content.id} contentType={content.media_type || "movie"} />         
-         </div>
+            <TrailerSection
+              movieId={content.id}
+              contentType={content.media_type || "movie"}
+            />
+          </div>
         </div>
       </div>
     </div>

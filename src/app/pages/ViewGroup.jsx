@@ -1,109 +1,113 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
-import { useAuth } from "../hooks/useAuth"
-import EntityHeader from "../components/EntityHeader"
-import TabsWrapper from "../components/TabsWrapper"
-import PostsTabContent from "../components/tabs/PostsTabContent"
-import GroupMembers from "../components/groups/GroupMembers"
-import GroupSharedWatchlist from "../components/groups/GroupSharedWatchlist"
-import GroupStatistics from "../components/groups/GroupStatistics"
-import CanvasLoader from "../components/CanvasLoader"
-import GroupMembersContent from "../components/groups/GroupMembersContent"
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../hooks/useAuth";
+import EntityHeader from "../components/EntityHeader";
+import TabsWrapper from "../components/TabsWrapper";
+import PostsTabContent from "../components/tabs/PostsTabContent";
+import GroupSharedWatchlist from "../components/groups/GroupSharedWatchlist";
+import GroupStatistics from "../components/groups/GroupStatistics";
+import CanvasLoader from "../components/CanvasLoader";
+import GroupMembersContent from "../components/groups/GroupMembersContent";
 
 export default function ViewGroup() {
-  const { groupId } = useParams()
-  const navigate = useNavigate()
-  const { user, token } = useAuth()
+  const { groupId } = useParams();
+  const navigate = useNavigate();
+  const { user, token } = useAuth();
 
-  const [group, setGroup] = useState(null)
-  const [groupPosts, setGroupPosts] = useState([])
-  const [activeTab, setActiveTab] = useState("posts")
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [refreshing, setRefreshing] = useState(false)
+  const [group, setGroup] = useState(null);
+  const [groupPosts, setGroupPosts] = useState([]);
+  const [activeTab, setActiveTab] = useState("posts");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Check user membership status
-  const isGroupMember = group?.members?.some(member => 
-    (member._id || member.id || member) === (user?._id || user?.id)
-  )
-  const isGroupAdmin = group?.admin?._id === user?._id || group?.admin?.id === user?.id
+  const isGroupMember = group?.members?.some(
+    (member) => (member._id || member.id || member) === (user?._id || user?.id)
+  );
+  const isGroupAdmin =
+    group?.admin?._id === user?._id || group?.admin?.id === user?.id;
 
   useEffect(() => {
     if (groupId && token) {
-      fetchGroupData()
+      fetchGroupData();
     }
-  }, [groupId, token])
+  }, [groupId, token]);
 
   const fetchGroupData = async (showRefreshLoader = false) => {
     try {
       if (showRefreshLoader) {
-        setRefreshing(true)
+        setRefreshing(true);
       } else {
-        setIsLoading(true)
+        setIsLoading(true);
       }
-      setError(null)
+      setError(null);
 
       // Fetch group details and posts in parallel
       const [groupResponse, postsResponse] = await Promise.all([
         axios.get(`http://localhost:3001/api/groups/${groupId}`, {
-          headers: { 'x-auth-token': token }
+          headers: { "x-auth-token": token },
         }),
         axios.get(`http://localhost:3001/api/posts?groupId=${groupId}`, {
-          headers: { 'x-auth-token': token }
-        })
-      ])
+          headers: { "x-auth-token": token },
+        }),
+      ]);
 
-      setGroup(groupResponse.data)
-      setGroupPosts(postsResponse.data)
+      setGroup(groupResponse.data);
+      setGroupPosts(postsResponse.data);
     } catch (error) {
-      console.error('Error fetching group data:', error)
-      
+      console.error("Error fetching group data:", error);
+
       if (error.response?.status === 404) {
-        setError('Group not found')
+        setError("Group not found");
       } else if (error.response?.status === 403) {
-        setError('You don\'t have permission to view this group')
+        setError("You don't have permission to view this group");
       } else {
-        setError('Failed to load group data')
+        setError("Failed to load group data");
       }
     } finally {
-      setIsLoading(false)
-      setRefreshing(false)
+      setIsLoading(false);
+      setRefreshing(false);
     }
-  }
+  };
 
   const handlePostCreated = (newPost) => {
-    setGroupPosts(prevPosts => [newPost, ...prevPosts])
-  }
+    setGroupPosts((prevPosts) => [newPost, ...prevPosts]);
+  };
 
   const handlePostDeleted = (deletedPostId) => {
-    setGroupPosts(prevPosts => prevPosts.filter(post => post._id !== deletedPostId))
-  }
+    setGroupPosts((prevPosts) =>
+      prevPosts.filter((post) => post._id !== deletedPostId)
+    );
+  };
 
   const handlePostUpdated = (updatedPost) => {
-    setGroupPosts(prevPosts => 
-      prevPosts.map(post => post._id === updatedPost._id ? updatedPost : post)
-    )
-  }
+    setGroupPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === updatedPost._id ? updatedPost : post
+      )
+    );
+  };
 
   const handleGroupJoined = () => {
-    fetchGroupData(true)
-  }
+    fetchGroupData(true);
+  };
 
   const handleGroupLeft = () => {
-    fetchGroupData(true)
-  }
+    fetchGroupData(true);
+  };
 
   const handleManageGroup = () => {
     // Navigate to group management page or open management modal
-    navigate(`/groups/${groupId}/manage`)
-  }
+    navigate(`/groups/${groupId}/manage`);
+  };
 
   const handleMemberAdded = () => {
-    fetchGroupData(true)
-  }
+    fetchGroupData(true);
+  };
 
   // Tab configuration
   const tabs = [
@@ -111,26 +115,26 @@ export default function ViewGroup() {
       id: "posts",
       label: "Posts",
       icon: <i className="bi bi-chat-text"></i>,
-      count: groupPosts.length
+      count: groupPosts.length,
     },
     {
       id: "members",
       label: "Members",
       icon: <i className="bi bi-people"></i>,
-      count: group?.members?.length || 0
+      count: group?.members?.length || 0,
     },
     {
       id: "watchlist",
       label: "Watchlist",
       icon: <i className="bi bi-list-stars"></i>,
-      count: group?.sharedWatchlist?.length || 0
+      count: group?.sharedWatchlist?.length || 0,
     },
     {
       id: "statistics",
       label: "Statistics",
-      icon: <i className="bi bi-graph-up"></i>
-    }
-  ]
+      icon: <i className="bi bi-graph-up"></i>,
+    },
+  ];
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -147,15 +151,15 @@ export default function ViewGroup() {
             isGroupMember={isGroupMember}
             isGroupAdmin={isGroupAdmin}
           />
-        )
+        );
       case "members":
         return (
-           <GroupMembersContent
+          <GroupMembersContent
             group={group}
             members={group?.members || []}
             currentUser={user}
           />
-        )
+        );
       case "watchlist":
         return (
           <GroupSharedWatchlist
@@ -163,23 +167,18 @@ export default function ViewGroup() {
             isGroupMember={isGroupMember}
             isGroupAdmin={isGroupAdmin}
           />
-        )
+        );
       case "statistics":
-        return (
-          <GroupStatistics
-            groupId={groupId}
-            group={group}
-          />
-        )
+        return <GroupStatistics groupId={groupId} group={group} />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   // Authentication check
   if (!token || !user) {
     return (
-      <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+      <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
         <div className="container py-4 d-flex align-items-center justify-content-center">
           <EmptyState
             icon="shield-lock"
@@ -187,35 +186,47 @@ export default function ViewGroup() {
             description="Please log in to view this group."
             showButton={true}
             buttonText="Sign In"
-            buttonAction={() => navigate('/login')}
+            buttonAction={() => navigate("/login")}
           />
         </div>
       </div>
-    )
+    );
   }
 
   // Loading state
   if (isLoading) {
     return (
-      <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+      <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
         <div className="container py-4">
           {/* Header Skeleton */}
           <div className="glass-card mb-4">
             <div className="card-body p-4">
               <div className="row align-items-center">
                 <div className="col-auto">
-                  <div 
+                  <div
                     className="rounded-circle bg-secondary"
-                    style={{ width: '100px', height: '100px' }}
+                    style={{ width: "100px", height: "100px" }}
                   ></div>
                 </div>
                 <div className="col">
-                  <div className="bg-secondary rounded mb-2" style={{ width: '200px', height: '2rem' }}></div>
-                  <div className="bg-secondary rounded mb-3" style={{ width: '300px', height: '1rem' }}></div>
-                  <div className="bg-secondary rounded" style={{ width: '250px', height: '1rem' }}></div>
+                  <div
+                    className="bg-secondary rounded mb-2"
+                    style={{ width: "200px", height: "2rem" }}
+                  ></div>
+                  <div
+                    className="bg-secondary rounded mb-3"
+                    style={{ width: "300px", height: "1rem" }}
+                  ></div>
+                  <div
+                    className="bg-secondary rounded"
+                    style={{ width: "250px", height: "1rem" }}
+                  ></div>
                 </div>
                 <div className="col-auto">
-                  <div className="bg-secondary rounded" style={{ width: '120px', height: '2.5rem' }}></div>
+                  <div
+                    className="bg-secondary rounded"
+                    style={{ width: "120px", height: "2.5rem" }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -225,13 +236,13 @@ export default function ViewGroup() {
           <CanvasLoader fullscreen={true} text="Loading group..." />
         </div>
       </div>
-    )
+    );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+      <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
         <div className="container py-4 d-flex align-items-center justify-content-center">
           <EmptyState
             icon="exclamation-triangle"
@@ -243,13 +254,13 @@ export default function ViewGroup() {
           />
         </div>
       </div>
-    )
+    );
   }
 
   // Group not found
   if (!group) {
     return (
-      <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+      <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
         <div className="container py-4 d-flex align-items-center justify-content-center">
           <EmptyState
             icon="people"
@@ -257,25 +268,28 @@ export default function ViewGroup() {
             description="This group doesn't exist or you don't have access to it."
             showButton={true}
             buttonText="Browse Groups"
-            buttonAction={() => navigate('/groups')}
+            buttonAction={() => navigate("/groups")}
           />
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+    <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
       <div className="container py-4">
         {/* Refresh Button */}
         <div className="d-flex justify-content-end mb-3">
-          <button 
+          <button
             className="btn btn-outline-light btn-sm d-flex align-items-center gap-2"
             onClick={() => fetchGroupData(true)}
             disabled={refreshing}
           >
             {refreshing ? (
-              <span className="spinner-border spinner-border-sm" role="status"></span>
+              <span
+                className="spinner-border spinner-border-sm"
+                role="status"
+              ></span>
             ) : (
               <i className="bi bi-arrow-clockwise"></i>
             )}
@@ -308,5 +322,5 @@ export default function ViewGroup() {
         </TabsWrapper>
       </div>
     </div>
-  )
+  );
 }

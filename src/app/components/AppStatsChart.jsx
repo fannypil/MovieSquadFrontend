@@ -12,9 +12,12 @@ export default function AppStatsChart() {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/stats/summary", {
-        headers: { "x-auth-token": token }
-      });
+      const response = await axios.get(
+        "http://localhost:3001/api/stats/summary",
+        {
+          headers: { "x-auth-token": token },
+        }
+      );
       setStats(response.data);
     } catch (err) {
       setStats(null);
@@ -25,7 +28,6 @@ export default function AppStatsChart() {
 
   useEffect(() => {
     fetchStats();
-    // eslint-disable-next-line
   }, [token]);
 
   useEffect(() => {
@@ -45,18 +47,23 @@ export default function AppStatsChart() {
     const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
-    svg.attr("width", width + margin.left + margin.right)
-       .attr("height", height + margin.top + margin.bottom);
+    svg
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
 
-    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const g = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const x = d3.scaleBand()
-      .domain(data.map(d => d.label))
+    const x = d3
+      .scaleBand()
+      .domain(data.map((d) => d.label))
       .range([0, width])
       .padding(0.3);
 
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value)])
+    const y = d3
+      .scaleLinear()
+      .domain([0, d3.max(data, (d) => d.value)])
       .range([height, 0])
       .nice();
 
@@ -74,8 +81,9 @@ export default function AppStatsChart() {
       .attr("fill", "#fff")
       .attr("font-size", "12px");
 
-    const colorScale = d3.scaleOrdinal()
-      .domain(data.map(d => d.label))
+    const colorScale = d3
+      .scaleOrdinal()
+      .domain(data.map((d) => d.label))
       .range(d3.schemeSet3);
 
     g.selectAll(".bar")
@@ -83,30 +91,30 @@ export default function AppStatsChart() {
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", d => x(d.label))
+      .attr("x", (d) => x(d.label))
       .attr("width", x.bandwidth())
       .attr("y", height)
       .attr("height", 0)
-      .attr("fill", d => colorScale(d.label))
+      .attr("fill", (d) => colorScale(d.label))
       .attr("rx", 4)
       .attr("ry", 4)
       .transition()
       .duration(1000)
       .delay((d, i) => i * 100)
-      .attr("y", d => y(d.value))
-      .attr("height", d => height - y(d.value));
+      .attr("y", (d) => y(d.value))
+      .attr("height", (d) => height - y(d.value));
 
     g.selectAll(".label")
       .data(data)
       .enter()
       .append("text")
-      .attr("x", d => x(d.label) + x.bandwidth() / 2)
-      .attr("y", d => y(d.value) - 8)
+      .attr("x", (d) => x(d.label) + x.bandwidth() / 2)
+      .attr("y", (d) => y(d.value) - 8)
       .attr("text-anchor", "middle")
       .attr("fill", "#fff")
       .attr("font-size", "13px")
       .attr("font-weight", "bold")
-      .text(d => d.value);
+      .text((d) => d.value);
   }, [stats, loading]);
 
   return (
@@ -117,16 +125,22 @@ export default function AppStatsChart() {
           className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
           disabled={loading}
         >
-          <i className={`bi bi-arrow-clockwise ${loading ? 'spin' : ''}`}></i>
+          <i className={`bi bi-arrow-clockwise ${loading ? "spin" : ""}`}></i>
           Refresh
         </button>
       </div>
-      <div className="p-3 rounded" style={{
-        background: 'rgba(17, 24, 39, 0.5)',
-        backdropFilter: 'blur(10px)'
-      }}>
+      <div
+        className="p-3 rounded"
+        style={{
+          background: "rgba(17, 24, 39, 0.5)",
+          backdropFilter: "blur(10px)",
+        }}
+      >
         {loading ? (
-          <div className="d-flex align-items-center justify-content-center" style={{ height: '300px' }}>
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: "300px" }}
+          >
             <div className="text-center">
               <div className="spinner-border text-warning mb-3" role="status">
                 <span className="visually-hidden">Loading...</span>
@@ -135,7 +149,11 @@ export default function AppStatsChart() {
             </div>
           </div>
         ) : (
-          <svg ref={svgRef} className="w-100" style={{ minHeight: '300px' }}></svg>
+          <svg
+            ref={svgRef}
+            className="w-100"
+            style={{ minHeight: "300px" }}
+          ></svg>
         )}
       </div>
     </div>

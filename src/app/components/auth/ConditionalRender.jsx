@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { usePermissions } from '@/app/hooks/usePermissions';
-import React from 'react';
+import { usePermissions } from "@/app/hooks/usePermissions";
+import React from "react";
 
-const ConditionalRender = ({ 
-  permission, 
-  context = {}, 
-  children, 
-  fallback = null 
+const ConditionalRender = ({
+  permission,
+  context = {},
+  children,
+  fallback = null,
 }) => {
   const { checkPermission } = usePermissions();
 

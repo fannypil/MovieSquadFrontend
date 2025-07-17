@@ -1,104 +1,102 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from "react";
 
 export function useMessageStatus(socket, conversation, messages, currentUser) {
-    const [messageStatuses, setMessageStatuses] = useState({})
-    const processedMessagesRef = useRef(new Set()) // Track which messages we've already processed
-    const markingTimeoutRef = useRef(null)
+  const [messageStatuses, setMessageStatuses] = useState({});
+  const processedMessagesRef = useRef(new Set()); // Track which messages we've already processed
+  const markingTimeoutRef = useRef(null);
 
-    useEffect(() => {
-        if (!socket || !conversation) return
+  useEffect(() => {
+    if (!socket || !conversation) return;
 
-        const handleMessageReadStatus = (data) => {
-            // Remove the excessive logging
-            // console.log('👁️ Message read status:', data)
-            setMessageStatuses(prev => ({
-                ...prev,
-                [data.messageId]: {
-                    ...prev[data.messageId],
-                    read: true,
-                    readAt: data.readAt,
-                    readBy: data.readBy
-                }
-            }))
-        }
+    const handleMessageReadStatus = (data) => {
+      setMessageStatuses((prev) => ({
+        ...prev,
+        [data.messageId]: {
+          ...prev[data.messageId],
+          read: true,
+          readAt: data.readAt,
+          readBy: data.readBy,
+        },
+      }));
+    };
 
-        socket.on('messageReadStatus', handleMessageReadStatus)
+    socket.on("messageReadStatus", handleMessageReadStatus);
 
-        return () => {
-            socket.off('messageReadStatus', handleMessageReadStatus)
-        }
-    }, [socket, conversation?.chatIdentifier])
+    return () => {
+      socket.off("messageReadStatus", handleMessageReadStatus);
+    };
+  }, [socket, conversation?.chatIdentifier]);
 
-    useEffect(() => {
-        const markUnreadMessagesAsRead = () => {
-            if (!socket || !conversation || !currentUser) return
+  useEffect(() => {
+    const markUnreadMessagesAsRead = () => {
+      if (!socket || !conversation || !currentUser) return;
 
-            const unreadMessages = messages.filter(msg => {
-                const isOwnMessage = msg.sender._id === currentUser._id
-                const alreadyProcessed = processedMessagesRef.current.has(msg._id)
-                const alreadyRead = messageStatuses[msg._id]?.read
-                
-                return !isOwnMessage && !alreadyProcessed && !alreadyRead
-            })
+      const unreadMessages = messages.filter((msg) => {
+        const isOwnMessage = msg.sender._id === currentUser._id;
+        const alreadyProcessed = processedMessagesRef.current.has(msg._id);
+        const alreadyRead = messageStatuses[msg._id]?.read;
 
-            if (unreadMessages.length === 0) return
+        return !isOwnMessage && !alreadyProcessed && !alreadyRead;
+      });
 
-            // Mark messages as processed to prevent duplicates
-            unreadMessages.forEach(message => {
-                processedMessagesRef.current.add(message._id)
-                
-                socket.emit('messageRead', {
-                    messageId: message._id,
-                    chatIdentifier: conversation.chatIdentifier
-                })
-                
-                setMessageStatuses(prev => ({
-                    ...prev,
-                    [message._id]: {
-                        ...prev[message._id],
-                        read: true,
-                        readAt: new Date()
-                    }
-                }))
-            })
+      if (unreadMessages.length === 0) return;
 
-            console.log(`📖 Marked ${unreadMessages.length} messages as read`)
-        }
+      // Mark messages as processed to prevent duplicates
+      unreadMessages.forEach((message) => {
+        processedMessagesRef.current.add(message._id);
 
-        // Clear any existing timeout
-        if (markingTimeoutRef.current) {
-            clearTimeout(markingTimeoutRef.current)
-        }
+        socket.emit("messageRead", {
+          messageId: message._id,
+          chatIdentifier: conversation.chatIdentifier,
+        });
 
-        // Debounce the marking process
-        if (messages.length > 0) {
-            markingTimeoutRef.current = setTimeout(markUnreadMessagesAsRead, 500)
-        }
+        setMessageStatuses((prev) => ({
+          ...prev,
+          [message._id]: {
+            ...prev[message._id],
+            read: true,
+            readAt: new Date(),
+          },
+        }));
+      });
 
-        const handleWindowFocus = () => {
-            // Clear timeout and mark immediately on focus
-            if (markingTimeoutRef.current) {
-                clearTimeout(markingTimeoutRef.current)
-            }
-            markUnreadMessagesAsRead()
-        }
+      console.log(` Marked ${unreadMessages.length} messages as read`);
+    };
 
-        window.addEventListener('focus', handleWindowFocus)
-        return () => {
-            window.removeEventListener('focus', handleWindowFocus)
-            if (markingTimeoutRef.current) {
-                clearTimeout(markingTimeoutRef.current)
-            }
-        }
-    }, [messages, socket, conversation, currentUser._id]) 
+    // Clear any existing timeout
+    if (markingTimeoutRef.current) {
+      clearTimeout(markingTimeoutRef.current);
+    }
 
-    useEffect(() => {
-        // Reset state when conversation changes
-        setMessageStatuses({})
-        processedMessagesRef.current.clear()
-    }, [conversation?.chatIdentifier])
+    // Debounce the marking process
+    if (messages.length > 0) {
+      markingTimeoutRef.current = setTimeout(markUnreadMessagesAsRead, 500);
+    }
 
-    return { messageStatuses }
+    const handleWindowFocus = () => {
+      // Clear timeout and mark immediately on focus
+      if (markingTimeoutRef.current) {
+        clearTimeout(markingTimeoutRef.current);
+      }
+      markUnreadMessagesAsRead();
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      if (markingTimeoutRef.current) {
+        clearTimeout(markingTimeoutRef.current);
+      }
+    };
+  }, [messages, socket, conversation, currentUser._id]);
+
+  useEffect(() => {
+    // Reset state when conversation changes
+    setMessageStatuses({});
+    processedMessagesRef.current.clear();
+  }, [conversation?.chatIdentifier]);
+
+  return { messageStatuses };
 }

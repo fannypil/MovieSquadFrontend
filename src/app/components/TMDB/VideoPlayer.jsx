@@ -4,7 +4,11 @@ export default function VideoPlayer({ src, youtubeKey }) {
   if (src) {
     return (
       <div className="mb-3">
-        <video controls width="100%" style={{ borderRadius: "12px", background: "#232323" }}>
+        <video
+          controls
+          width="100%"
+          style={{ borderRadius: "12px", background: "#232323" }}
+        >
           <source src={src} type="video/mp4" />
           Your browser does not support the video tag.
         </video>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -20,13 +20,12 @@ export default function DiscoveryPage() {
   const [hasSearched, setHasSearched] = useState(false); // Track if user has performed a search
 
   const [filters, setFilters] = useState({
-  genre: "",
-  year: "",
-  minRating: "",
-  sortBy: "popularity.desc"
+    genre: "",
+    year: "",
+    minRating: "",
+    sortBy: "popularity.desc",
   });
 
-  
   useEffect(() => {
     loadTrendingContent();
   }, [contentType]);
@@ -61,9 +60,12 @@ export default function DiscoveryPage() {
       }
       if (filters.minRating) params.vote_average_gte = filters.minRating;
 
-      const response = await axios.get(`http://localhost:3001/api/tmdb/discover`, {
-        params
-      });
+      const response = await axios.get(
+        `http://localhost:3001/api/tmdb/discover`,
+        {
+          params,
+        }
+      );
       setTrendingContent(response.data.results || []);
       setActiveTab("trending");
     } catch (error) {
@@ -86,18 +88,16 @@ export default function DiscoveryPage() {
       id: "trending",
       label: "Trending",
       icon: <i className="bi bi-fire"></i>,
-      count: trendingContent.length
+      count: trendingContent.length,
     },
     {
       id: "search",
       label: "Search Results",
       icon: <i className="bi bi-search"></i>,
       count: searchResults.length,
-      disabled: false // Always enabled now
-    }
+      disabled: false, // Always enabled now
+    },
   ];
-
-  
 
   const renderContent = () => {
     if (activeTab === "search") {
@@ -119,14 +119,18 @@ export default function DiscoveryPage() {
           <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h5 className="text-white mb-0">
-                Search Results {lastSearchQuery && `for "${lastSearchQuery}"`} (0)
+                Search Results {lastSearchQuery && `for "${lastSearchQuery}"`}{" "}
+                (0)
               </h5>
-              <button className="btn btn-outline-secondary btn-sm" onClick={clearSearch}>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={clearSearch}
+              >
                 <i className="bi bi-x-circle me-1"></i>
                 Clear Search
               </button>
             </div>
-            
+
             <EmptyState
               icon="search"
               title="No results found"
@@ -145,17 +149,23 @@ export default function DiscoveryPage() {
           <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h5 className="text-white mb-0">
-                Search Results {lastSearchQuery && `for "${lastSearchQuery}"`} ({searchResults.length})
+                Search Results {lastSearchQuery && `for "${lastSearchQuery}"`} (
+                {searchResults.length})
               </h5>
-              <button className="btn btn-outline-secondary btn-sm" onClick={clearSearch}>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={clearSearch}
+              >
                 <i className="bi bi-x-circle me-1"></i>
                 Clear Search
               </button>
             </div>
-            
+
             {searchResults.map((item) => (
               <TMDBContentCard
-                key={`${item.id}-${item.media_type || (item.title ? 'movie' : 'tv')}`}
+                key={`${item.id}-${
+                  item.media_type || (item.title ? "movie" : "tv")
+                }`}
                 content={item}
                 variant="discovery"
                 currentUser={user}
@@ -179,7 +189,7 @@ export default function DiscoveryPage() {
     // Trending tab
     if (isLoadingTrending) {
       return (
-      <CanvasLoader fullscreen={true} text="Loading trending content..." />
+        <CanvasLoader fullscreen={true} text="Loading trending content..." />
       );
     }
 
@@ -203,35 +213,39 @@ export default function DiscoveryPage() {
             <i className="bi bi-fire me-2"></i>
             Trending {contentType === "movie" ? "Movies" : "TV Shows"}
           </h5>
-          
+
           {/* Content Type Filter */}
           <div className="btn-group" role="group">
-            <input 
-              type="radio" 
-              className="btn-check" 
-              name="contentType" 
-              id="movie" 
-              checked={contentType === "movie"} 
-              onChange={() => setContentType("movie")} 
+            <input
+              type="radio"
+              className="btn-check"
+              name="contentType"
+              id="movie"
+              checked={contentType === "movie"}
+              onChange={() => setContentType("movie")}
             />
-            <label className="btn btn-outline-warning btn-sm" htmlFor="movie">Movies</label>
+            <label className="btn btn-outline-warning btn-sm" htmlFor="movie">
+              Movies
+            </label>
 
-            <input 
-              type="radio" 
-              className="btn-check" 
-              name="contentType" 
-              id="tv" 
-              checked={contentType === "tv"} 
-              onChange={() => setContentType("tv")} 
+            <input
+              type="radio"
+              className="btn-check"
+              name="contentType"
+              id="tv"
+              checked={contentType === "tv"}
+              onChange={() => setContentType("tv")}
             />
-            <label className="btn btn-outline-warning btn-sm" htmlFor="tv">TV Shows</label>
+            <label className="btn btn-outline-warning btn-sm" htmlFor="tv">
+              TV Shows
+            </label>
           </div>
         </div>
 
         {trendingContent.map((item) => (
           <TMDBContentCard
             key={`${item.id}-${item.media_type || contentType}`}
-            content={{...item, media_type: item.media_type || contentType}}
+            content={{ ...item, media_type: item.media_type || contentType }}
             variant="discovery"
             currentUser={user}
           />
@@ -240,20 +254,24 @@ export default function DiscoveryPage() {
     );
   };
 
-return (
-    <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+  return (
+    <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
       <div className="container py-4">
         {/* Header */}
         <div className="text-center mb-5">
           <h1 className="display-5 fw-bold text-white mb-3">
             Discover Movies & TV Shows
           </h1>
-          <p className="text-light">Explore trending content and search for your favorites</p>
+          <p className="text-light">
+            Explore trending content and search for your favorites
+          </p>
         </div>
 
         {/* Enhanced Search Bar */}
-        <div className="card mb-4"
-        style={{ position: 'relative', zIndex: 999 }}>
+        <div
+          className="card mb-4"
+          style={{ position: "relative", zIndex: 999 }}
+        >
           <div className="card-body p-4">
             <TMDBSearch
               onSelectItem={(item) => {
@@ -271,7 +289,10 @@ return (
         </div>
 
         {/* Content Tabs */}
-        <ul className="nav nav-tabs justify-content-center mb-4" style={{ borderBottom: '1px solid #444' }}>
+        <ul
+          className="nav nav-tabs justify-content-center mb-4"
+          style={{ borderBottom: "1px solid #444" }}
+        >
           {tabs.map((tab) => (
             <li key={tab.id} className="nav-item">
               <button
@@ -279,10 +300,11 @@ return (
                 onClick={() => !tab.disabled && setActiveTab(tab.id)}
                 disabled={tab.disabled}
                 style={{
-                  backgroundColor: activeTab === tab.id ? '#ff8c00' : 'transparent',
-                  borderColor: activeTab === tab.id ? '#ff8c00' : '#444',
-                  color: activeTab === tab.id ? 'white' : '#ccc',
-                  transition: 'all 0.3s ease'
+                  backgroundColor:
+                    activeTab === tab.id ? "#ff8c00" : "transparent",
+                  borderColor: activeTab === tab.id ? "#ff8c00" : "#444",
+                  color: activeTab === tab.id ? "white" : "#ccc",
+                  transition: "all 0.3s ease",
                 }}
               >
                 <span className="me-2">{tab.icon}</span>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import VideoPlayer from "./VideoPlayer";
 
-export default function TrailerSection({ movieId,contentType }) {
+export default function TrailerSection({ movieId, contentType }) {
   const [loading, setLoading] = useState(true);
   const [trailer, setTrailer] = useState(null);
   const [videos, setVideos] = useState([]);
@@ -13,10 +13,11 @@ export default function TrailerSection({ movieId,contentType }) {
     if (!movieId) return;
     setLoading(true);
     setError(null);
-    axios.get(`http://localhost:3001/api/tmdb/${movieId}/videos`, {
-        params: { type: contentType } 
-    })
-      .then(res => {
+    axios
+      .get(`http://localhost:3001/api/tmdb/${movieId}/videos`, {
+        params: { type: contentType },
+      })
+      .then((res) => {
         setTrailer(res.data.trailer);
         setVideos(res.data.videos || []);
         setSelectedKey(res.data.trailer?.key || null);
@@ -26,7 +27,7 @@ export default function TrailerSection({ movieId,contentType }) {
   }, [movieId]);
 
   // Optional: allow user to select trailer if multiple available
-  const youtubeVideos = videos.filter(v => v.site === "YouTube");
+  const youtubeVideos = videos.filter((v) => v.site === "YouTube");
   const showDropdown = youtubeVideos.length > 1;
 
   return (

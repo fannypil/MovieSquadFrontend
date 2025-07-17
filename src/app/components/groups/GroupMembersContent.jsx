@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import FriendCard from "../friends/FriendCard";
@@ -6,46 +6,39 @@ import InviteToGroupModal from "./InviteToGroupModal";
 
 export default function GroupMembersContent({ group, members, currentUser }) {
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const isAdmin = group?.admin?._id === currentUser?._id || group?.admin?.id === currentUser?.id;
-  const isMember = members.some(m => (m._id || m.id) === currentUser._id);
+  const isAdmin =
+    group?.admin?._id === currentUser?._id ||
+    group?.admin?.id === currentUser?.id;
+  const isMember = members.some((m) => (m._id || m.id) === currentUser._id);
 
-  // Debug: log props
-  useEffect(() => {
-    console.log("GroupMembersContent mounted");
-    console.log("group:", group);
-    console.log("members:", members);
-    console.log("currentUser:", currentUser);
-  }, [group, members, currentUser]);
-
-   // Debug: log role
+  // Debug: log role
   useEffect(() => {
     console.log("isAdmin:", isAdmin, "isMember:", isMember);
   }, [isAdmin, isMember]);
 
   const handleRemoveMember = async (memberId) => {
     try {
-      console.log('Removing member:', memberId, 'from group:', group._id);
-    
+      console.log("Removing member:", memberId, "from group:", group._id);
     } catch (error) {
-      console.error('Error removing member:', error);
+      console.error("Error removing member:", error);
     }
   };
-    const handleInviteSent = () => {
+  const handleInviteSent = () => {
     setShowInviteModal(false);
     // Optionally show success message or refresh data
-    console.log('Invitations sent successfully!');
+    console.log("Invitations sent successfully!");
   };
   // Debug: log modal state
   useEffect(() => {
     console.log("showInviteModal changed:", showInviteModal);
   }, [showInviteModal]);
-   return (
+  return (
     <>
       <div>
         <div className="d-flex justify-content-between align-items-center mb-4">
-            <h5 className="text-white mb-0">
-              <i className="bi bi-people-fill me-2"></i>Members ({members.length})
-            </h5>          
+          <h5 className="text-white mb-0">
+            <i className="bi bi-people-fill me-2"></i>Members ({members.length})
+          </h5>
           {/* Invite Button - Show for admins and members */}
           {(isAdmin || isMember) && (
             <button
@@ -62,8 +55,11 @@ export default function GroupMembersContent({ group, members, currentUser }) {
 
         {/* Existing member cards */}
         <div className="row">
-          {members.map(member => (
-            <div key={member._id || member.id} className="col-md-6 col-lg-4 mb-3">
+          {members.map((member) => (
+            <div
+              key={member._id || member.id}
+              className="col-md-6 col-lg-4 mb-3"
+            >
               <FriendCard
                 friend={member}
                 variant="member"
@@ -72,7 +68,7 @@ export default function GroupMembersContent({ group, members, currentUser }) {
                   groupName: group.name,
                   adminId: group.admin?._id || group.admin?.id,
                   isCurrentUserAdmin: isAdmin,
-                  createdAt: group.createdAt
+                  createdAt: group.createdAt,
                 }}
                 onRemoveFriend={handleRemoveMember}
                 showActions={true}

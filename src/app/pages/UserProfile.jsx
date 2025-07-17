@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -17,71 +17,73 @@ export default function UserProfile() {
   const [userFriends, setUserFriends] = useState([]);
   const [userCollections, setUserCollections] = useState({
     favoriteMovies: [],
-    watchedContent: []
+    watchedContent: [],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
 
   useEffect(() => {
-    if (currentUser && (currentUser._id === userId || currentUser.id === userId)) {
-      navigate('/profile');
+    if (
+      currentUser &&
+      (currentUser._id === userId || currentUser.id === userId)
+    ) {
+      navigate("/profile");
       return;
     }
-    if (token && userId) { 
+    if (token && userId) {
       fetchUserProfile();
     }
   }, [userId, navigate, currentUser, token]);
 
   const fetchUserProfile = async () => {
     if (!token) return;
-    
+
     try {
       setIsLoading(true);
       console.log(`Fetching profile for user ID: ${userId}`);
-      
+
       const [userResponse, postsResponse, groupsResponse] = await Promise.all([
         axios.get(`http://localhost:3001/api/user/profile/${userId}`, {
-          headers: { 'x-auth-token': token }
+          headers: { "x-auth-token": token },
         }),
         axios.get(`http://localhost:3001/api/activity/user/${userId}`, {
-          headers: { 'x-auth-token': token }
+          headers: { "x-auth-token": token },
         }),
-        axios.get('http://localhost:3001/api/groups', {
-          headers: { 'x-auth-token': token }
-        })
+        axios.get("http://localhost:3001/api/groups", {
+          headers: { "x-auth-token": token },
+        }),
       ]);
-      
+
       const userData = userResponse.data;
       setUser(userData);
       setUserPosts(postsResponse.data || []);
-      
-      const myGroups = groupsResponse.data.filter(group => 
-        group.members?.some(member => 
-          (member._id || member.id || member) === userId
+
+      const myGroups = groupsResponse.data.filter((group) =>
+        group.members?.some(
+          (member) => (member._id || member.id || member) === userId
         )
       );
       setUserGroups(myGroups);
-      
+
       if (userData.friends) {
         setUserFriends(userData.friends);
       }
-      
+
       setUserCollections({
         favoriteMovies: userData.favoriteMovies || [],
-        watchedContent: userData.watchedContent || []
+        watchedContent: userData.watchedContent || [],
       });
-      
     } catch (error) {
-      console.error('Error fetching user profile:', error);
-      
+      console.error("Error fetching user profile:", error);
+
       if (error.response?.status === 404) {
-        alert('User not found');
+        alert("User not found");
       } else if (error.response?.status === 403) {
-        alert('This profile is private');
+        alert("This profile is private");
       } else {
-        alert('Failed to load user profile');
+        alert("Failed to load user profile");
       }
-      navigate('/');
+      navigate("/");
     } finally {
       setIsLoading(false);
     }
@@ -101,12 +103,21 @@ export default function UserProfile() {
 
   if (isLoading) {
     return (
-      <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+      <div
+        className="moviesquad-bg d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
         <div className="text-center">
-          <div className="spinner-border text-warning mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
+          <div
+            className="spinner-border text-warning mb-3"
+            role="status"
+            style={{ width: "3rem", height: "3rem" }}
+          >
             <span className="visually-hidden">Loading...</span>
           </div>
-          <h5 className="text-white">Loading {user?.username || 'user'}'s profile...</h5>
+          <h5 className="text-white">
+            Loading {user?.username || "user"}'s profile...
+          </h5>
           <p className="text-muted">Please wait while we fetch their data</p>
         </div>
       </div>
@@ -115,18 +126,27 @@ export default function UserProfile() {
 
   if (!user) {
     return (
-      <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+      <div
+        className="moviesquad-bg d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
         <div className="text-center">
-          <div className="text-danger mb-3" style={{ fontSize: '3rem' }}>
+          <div className="text-danger mb-3" style={{ fontSize: "3rem" }}>
             <i className="bi bi-person-x"></i>
           </div>
           <h4 className="text-white mb-3">Profile Not Found</h4>
-          <p className="text-light mb-4">The user you're looking for doesn't exist or their profile is private.</p>
+          <p className="text-light mb-4">
+            The user you're looking for doesn't exist or their profile is
+            private.
+          </p>
           <div className="d-flex gap-2 justify-content-center">
-            <button className="btn btn-outline-light" onClick={() => navigate(-1)}>
+            <button
+              className="btn btn-outline-light"
+              onClick={() => navigate(-1)}
+            >
               <i className="bi bi-arrow-left me-2"></i>Go Back
             </button>
-            <button className="btn btn-gold" onClick={() => navigate('/')}>
+            <button className="btn btn-gold" onClick={() => navigate("/")}>
               <i className="bi bi-house me-2"></i>Go Home
             </button>
           </div>
@@ -136,11 +156,10 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+    <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
       <div className="container py-4">
-        
         <div className="d-flex align-items-center mb-4">
-          <button 
+          <button
             className="btn btn-outline-light btn-sm me-3 hover-lift"
             onClick={() => navigate(-1)}
           >
@@ -160,7 +179,7 @@ export default function UserProfile() {
           onUserUpdated={setUser}
           onPostCreated={null} // No post creation for other users
         />
-        
+
         <div className="mt-4">
           <ProfileTabs
             activeTab={activeTab}

@@ -1,15 +1,21 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "@/app/hooks/useAuth";
 import UserSearch from "../friends/UserSearch";
 
-export default function InviteToGroupModal({ isOpen, onClose, group, currentMembers = [], onInviteSent }) {
+export default function InviteToGroupModal({
+  isOpen,
+  onClose,
+  group,
+  currentMembers = [],
+  onInviteSent,
+}) {
   const { token, user } = useAuth();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [sending, setSending] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
 
-    // Debug: log modal props and state
+  // Debug: log modal props and state
   useEffect(() => {
     console.log("InviteToGroupModal rendered, isOpen:", isOpen);
     console.log("group:", group);
@@ -18,14 +24,13 @@ export default function InviteToGroupModal({ isOpen, onClose, group, currentMemb
   }, [isOpen, group, currentMembers, selectedUsers]);
 
   // IDs of users already in the group
-  const memberIds = currentMembers.map(m => m._id || m.id);
-  // TODO: get already invited IDs if you track them (e.g., group.pendingInvites)
+  const memberIds = currentMembers.map((m) => m._id || m.id);
 
   const handleUserSelect = (user) => {
     const id = user._id || user.id;
     if (memberIds.includes(id)) return; // Already member
-    if (selectedUsers.some(u => (u._id || u.id) === id)) {
-      setSelectedUsers(selectedUsers.filter(u => (u._id || u.id) !== id));
+    if (selectedUsers.some((u) => (u._id || u.id) === id)) {
+      setSelectedUsers(selectedUsers.filter((u) => (u._id || u.id) !== id));
     } else {
       setSelectedUsers([...selectedUsers, user]);
     }
@@ -55,17 +60,24 @@ export default function InviteToGroupModal({ isOpen, onClose, group, currentMemb
     }
   };
 
-if (!isOpen) {
+  if (!isOpen) {
     console.log("InviteToGroupModal not open, returning null");
     return null;
   }
   return (
     <div className="modal d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
       <div className="modal-dialog">
-        <div className="modal-content" style={{ background: "#23272b", color: "#fff" }}>
+        <div
+          className="modal-content"
+          style={{ background: "#23272b", color: "#fff" }}
+        >
           <div className="modal-header">
             <h5 className="modal-title">Invite Friends to {group.name}</h5>
-            <button className="btn-close btn-close-white" onClick={onClose} disabled={sending}></button>
+            <button
+              className="btn-close btn-close-white"
+              onClick={onClose}
+              disabled={sending}
+            ></button>
           </div>
           <div className="modal-body">
             <UserSearch
@@ -85,7 +97,11 @@ if (!isOpen) {
                 {sending ? "Sending..." : "Send Invitation(s)"}
               </button>
               {statusMsg && (
-                <div className={`mt-2 text-${statusMsg.includes("Failed") ? "danger" : "success"}`}>
+                <div
+                  className={`mt-2 text-${
+                    statusMsg.includes("Failed") ? "danger" : "success"
+                  }`}
+                >
                   {statusMsg}
                 </div>
               )}

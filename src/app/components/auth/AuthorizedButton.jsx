@@ -1,15 +1,14 @@
+import { usePermissions } from "@/app/hooks/usePermissions";
+import React from "react";
 
-import { usePermissions } from '@/app/hooks/usePermissions';
-import React from 'react';
-
-const AuthorizedButton = ({ 
-  permission, 
-  context = {}, 
-  children, 
-  className = 'btn btn-primary', 
+const AuthorizedButton = ({
+  permission,
+  context = {},
+  children,
+  className = "btn btn-primary",
   disabled = false,
   onClick,
-  ...props 
+  ...props
 }) => {
   const { checkPermission } = usePermissions();
 
@@ -20,7 +19,7 @@ const AuthorizedButton = ({
   }
 
   return (
-    <button 
+    <button
       className={className}
       disabled={disabled}
       onClick={onClick}

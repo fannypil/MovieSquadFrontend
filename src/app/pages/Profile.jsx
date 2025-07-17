@@ -14,36 +14,38 @@ export default function Profile() {
 
   const fetchUserPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/posts', {
-        headers: { 'x-auth-token': token }
+      const response = await axios.get("http://localhost:3001/api/posts", {
+        headers: { "x-auth-token": token },
       });
-      
+
       const currentUserId = user._id || user.id;
-      const filteredPosts = response.data.filter(post => {
-        const isUserPost = post.author._id === currentUserId || post.author.id === currentUserId;
-        const isNotGroupPost = !post.group; 
+      const filteredPosts = response.data.filter((post) => {
+        const isUserPost =
+          post.author._id === currentUserId || post.author.id === currentUserId;
+        const isNotGroupPost = !post.group;
         return isUserPost && isNotGroupPost;
       });
       setUserPosts(filteredPosts);
     } catch (error) {
-      console.error('Error fetching user posts:', error);
+      console.error("Error fetching user posts:", error);
     }
   };
 
   const fetchUserGroups = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/groups', {
-        headers: { 'x-auth-token': token }
+      const response = await axios.get("http://localhost:3001/api/groups", {
+        headers: { "x-auth-token": token },
       });
-      
-      const myGroups = response.data.filter(group => 
-        group.members?.some(member => 
-          (member._id || member.id || member) === (user._id || user.id)
+
+      const myGroups = response.data.filter((group) =>
+        group.members?.some(
+          (member) =>
+            (member._id || member.id || member) === (user._id || user.id)
         )
       );
       setUserGroups(myGroups);
     } catch (error) {
-      console.error('Error fetching user groups:', error);
+      console.error("Error fetching user groups:", error);
       setUserGroups([]);
     }
   };
@@ -56,12 +58,9 @@ export default function Profile() {
 
     try {
       setIsLoading(true);
-      await Promise.all([
-        fetchUserPosts(),
-        fetchUserGroups()
-      ]);
+      await Promise.all([fetchUserPosts(), fetchUserGroups()]);
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -69,11 +68,11 @@ export default function Profile() {
 
   useEffect(() => {
     fetchUserData();
-  }, [user, token]); 
+  }, [user, token]);
 
   const handlePostCreated = async (newPost) => {
-    console.log('New post created:', newPost);
-    setUserPosts(prevPosts => [newPost, ...prevPosts]);
+    console.log("New post created:", newPost);
+    setUserPosts((prevPosts) => [newPost, ...prevPosts]);
     await fetchUserPosts();
   };
 
@@ -92,7 +91,10 @@ export default function Profile() {
 
   if (!user || !token) {
     return (
-      <div className="moviesquad-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+      <div
+        className="moviesquad-bg d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
         <div className="text-center">
           <div className="alert alert-warning" role="alert">
             <h4 className="alert-heading"> Authentication Required</h4>
@@ -104,13 +106,11 @@ export default function Profile() {
   }
 
   if (isLoading) {
-  return (
-    <CanvasLoader fullscreen={true} text="Loading your profile..." />
-  );
-}
+    return <CanvasLoader fullscreen={true} text="Loading your profile..." />;
+  }
 
   return (
-    <div className="moviesquad-bg" style={{ minHeight: '100vh' }}>
+    <div className="moviesquad-bg" style={{ minHeight: "100vh" }}>
       <div className="container py-4">
         <ProfileHeader
           user={user}
@@ -119,7 +119,7 @@ export default function Profile() {
           onUserUpdated={handleUserUpdated}
           onPostCreated={handlePostCreated}
         />
-        
+
         <div className="mt-4">
           <ProfileTabs
             activeTab={activeTab}
@@ -130,11 +130,15 @@ export default function Profile() {
             currentUser={user}
             onGroupJoined={handleGroupJoined}
             onPostDeleted={(deletedPostId) => {
-              setUserPosts(prevPosts => prevPosts.filter(post => post._id !== deletedPostId));
+              setUserPosts((prevPosts) =>
+                prevPosts.filter((post) => post._id !== deletedPostId)
+              );
             }}
             onPostUpdated={(updatedPost) => {
-              setUserPosts(prevPosts => 
-                prevPosts.map(post => post._id === updatedPost._id ? updatedPost : post)
+              setUserPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                  post._id === updatedPost._id ? updatedPost : post
+                )
               );
             }}
           />

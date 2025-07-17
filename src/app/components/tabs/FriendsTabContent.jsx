@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -9,10 +9,10 @@ import UserSearch from "../friends/UserSearch";
 import TabsWrapper from "../TabsWrapper";
 import EmptyState from "../EmptyState";
 
-export default function FriendsTabContent({ 
-  currentUser, 
-  onViewProfile, 
-  userId = null // If userId is provided, we're viewing another user's friends
+export default function FriendsTabContent({
+  currentUser,
+  onViewProfile,
+  userId = null, // If userId is provided, we're viewing another user's friends
 }) {
   const { token } = useAuth();
   const [activeSubTab, setActiveSubTab] = useState("friends");
@@ -20,9 +20,10 @@ export default function FriendsTabContent({
   const [requestsCount, setRequestsCount] = useState(0);
   const [userFriends, setUserFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Check if we're viewing another user's profile
-  const isViewingOtherUser = userId && userId !== currentUser?._id && userId !== currentUser?.id;
+  const isViewingOtherUser =
+    userId && userId !== currentUser?._id && userId !== currentUser?.id;
 
   useEffect(() => {
     if (isViewingOtherUser) {
@@ -32,16 +33,19 @@ export default function FriendsTabContent({
 
   const fetchUserFriends = async () => {
     if (!token || !userId) return;
-    
+
     try {
       setIsLoading(true);
-      const response = await axios.get(`http://localhost:3001/api/user/profile/${userId}`, {
-        headers: { 'x-auth-token': token }
-      });
-      
+      const response = await axios.get(
+        `http://localhost:3001/api/user/profile/${userId}`,
+        {
+          headers: { "x-auth-token": token },
+        }
+      );
+
       setUserFriends(response.data.friends || []);
     } catch (error) {
-      console.error('Error fetching user friends:', error);
+      console.error("Error fetching user friends:", error);
       setUserFriends([]);
     } finally {
       setIsLoading(false);
@@ -55,7 +59,7 @@ export default function FriendsTabContent({
       label: "Friends",
       icon: <i className="bi bi-people"></i>,
       count: userFriends.length,
-    }
+    },
   ];
 
   // Full tabs for own profile
@@ -71,13 +75,13 @@ export default function FriendsTabContent({
       label: "Requests",
       icon: <i className="bi bi-person-fill-add"></i>,
       count: currentUser?.friendRequests?.length || 0,
-      showBadge: requestsCount > 0
+      showBadge: requestsCount > 0,
     },
     {
       id: "search",
       label: "Find Friends",
-      icon: <i className="bi bi-search"></i>
-    }
+      icon: <i className="bi bi-search"></i>,
+    },
   ];
 
   const handleFriendsCountUpdate = (count) => {
@@ -88,20 +92,21 @@ export default function FriendsTabContent({
     setRequestsCount(count);
   };
   const handleUserSelect = async (user) => {
-  if (!user?._id || !token) return;
-  try {
-    // Send friend request to backend
-    await axios.post(
-      "http://localhost:3001/api/user/friends/request",
-      { recipientId: user._id },
-      { headers: { 'x-auth-token': token } }
-    );
-    alert(`Friend request sent to ${user.username}!`);
-  } catch (error) {
-    const msg = error.response?.data?.message || "Failed to send friend request.";
-    alert(msg);
-  }
-};
+    if (!user?._id || !token) return;
+    try {
+      // Send friend request to backend
+      await axios.post(
+        "http://localhost:3001/api/user/friends/request",
+        { recipientId: user._id },
+        { headers: { "x-auth-token": token } }
+      );
+      alert(`Friend request sent to ${user.username}!`);
+    } catch (error) {
+      const msg =
+        error.response?.data?.message || "Failed to send friend request.";
+      alert(msg);
+    }
+  };
 
   const renderContent = () => {
     // For other users, only show their friends list
@@ -141,27 +146,29 @@ export default function FriendsTabContent({
           </div>
 
           <div className="row g-3">
-            {userFriends.map(friend => (
+            {userFriends.map((friend) => (
               <div key={friend._id} className="col-md-6 col-lg-4">
                 <div className="glass-card hover-lift h-100">
                   <div className="card-body text-center">
-                    <div 
+                    <div
                       className="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
                       style={{
-                        width: '60px',
-                        height: '60px',
-                        background: 'linear-gradient(45deg, #f59e0b, #d97706)',
-                        color: '#000',
-                        fontWeight: 'bold',
-                        fontSize: '24px'
+                        width: "60px",
+                        height: "60px",
+                        background: "linear-gradient(45deg, #f59e0b, #d97706)",
+                        color: "#000",
+                        fontWeight: "bold",
+                        fontSize: "24px",
                       }}
                     >
-                      {friend.username?.[0]?.toUpperCase() || 'U'}
+                      {friend.username?.[0]?.toUpperCase() || "U"}
                     </div>
-                    
+
                     <h6 className="text-white mb-2">{friend.username}</h6>
-                    <p className="text-light small mb-3 opacity-75">{friend.email}</p>
-                    
+                    <p className="text-light small mb-3 opacity-75">
+                      {friend.email}
+                    </p>
+
                     <button
                       className="btn btn-outline-warning btn-sm"
                       onClick={() => onViewProfile && onViewProfile(friend._id)}
@@ -182,7 +189,7 @@ export default function FriendsTabContent({
     switch (activeSubTab) {
       case "friends":
         return (
-          <FriendsList 
+          <FriendsList
             currentUser={currentUser}
             onViewProfile={onViewProfile}
             onFriendsCountUpdate={handleFriendsCountUpdate}
@@ -190,16 +197,18 @@ export default function FriendsTabContent({
         );
       case "requests":
         return (
-          <FriendRequests 
+          <FriendRequests
             currentUser={currentUser}
             onRequestsCountUpdate={handleRequestsCountUpdate}
           />
         );
       case "search":
-        return <UserSearch 
-        currentUser={currentUser}
-        onUserSelect={handleUserSelect}
-      />
+        return (
+          <UserSearch
+            currentUser={currentUser}
+            onUserSelect={handleUserSelect}
+          />
+        );
       default:
         return null;
     }

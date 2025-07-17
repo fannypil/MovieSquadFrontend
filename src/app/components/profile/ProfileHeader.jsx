@@ -1,21 +1,20 @@
-"use client"
+"use client";
 
-import React from "react"
-import EntityHeader from "../EntityHeader"
+import React from "react";
+import EntityHeader from "../EntityHeader";
 
-export default function ProfileHeader({ 
-  user, 
-  onUserUpdated, 
-  onPostCreated, 
-  isOwnProfile = true, 
-  currentUser, 
-  isGroupView = false, 
+export default function ProfileHeader({
+  user,
+  onUserUpdated,
+  onPostCreated,
+  isOwnProfile = true,
+  currentUser,
+  isGroupView = false,
   groupId = null,
   onGroupJoined,
   onGroupLeft,
-  onManageGroup
+  onManageGroup,
 }) {
-  
   // If this is a group view, pass the group data appropriately
   if (isGroupView) {
     return (
@@ -31,7 +30,7 @@ export default function ProfileHeader({
         onGroupLeft={onGroupLeft}
         onManageGroup={onManageGroup}
       />
-    )
+    );
   }
 
   // For regular profile view
@@ -44,5 +43,5 @@ export default function ProfileHeader({
       onPostCreated={onPostCreated}
       isOwnEntity={isOwnProfile}
     />
-  )
+  );
 }

@@ -1,30 +1,29 @@
-"use client"
+"use client";
 
-import React from 'react'
-import NotificationItem from './NotificationItem'
-import EmptyState from '../EmptyState'
-import CanvasLoader from '../CanvasLoader'
+import React from "react";
+import NotificationItem from "./NotificationItem";
+import EmptyState from "../EmptyState";
+import CanvasLoader from "../CanvasLoader";
 
-export default function NotificationsList({ 
-  notifications, 
-  isLoading, 
-  error, 
-  onMarkAsRead, 
-  onDelete, 
+export default function NotificationsList({
+  notifications,
+  isLoading,
+  error,
+  onMarkAsRead,
+  onDelete,
   onRetry,
-  onInvitationAction
+  onInvitationAction,
 }) {
-  
   if (isLoading) {
     return (
       <CanvasLoader fullscreen={true} text="Loading your notifications..." />
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="text-center py-5">
-        <div className="text-danger mb-3" style={{ fontSize: '3rem' }}>
+        <div className="text-danger mb-3" style={{ fontSize: "3rem" }}>
           <i className="bi bi-exclamation-triangle"></i>
         </div>
         <h5 className="text-white mb-3">Failed to Load Notifications</h5>
@@ -34,7 +33,7 @@ export default function NotificationsList({
           Try Again
         </button>
       </div>
-    )
+    );
   }
 
   if (!notifications || notifications.length === 0) {
@@ -45,7 +44,7 @@ export default function NotificationsList({
         description="No new notifications at the moment."
         showButton={false}
       />
-    )
+    );
   }
 
   return (
@@ -60,5 +59,5 @@ export default function NotificationsList({
         />
       ))}
     </div>
-  )
+  );
 }

@@ -16,7 +16,7 @@
   --bs-dark: #1f2937;
 }
 .moviesquad-bg {
-background: linear-gradient(to bottom right, #0f172a, #401481, #0f172a);
+  background: linear-gradient(to bottom right, #0f172a, #401481, #0f172a);
   min-height: 100vh;
 }
 
@@ -25,7 +25,7 @@ body {
   background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%) !important;
   color: #ffffff !important;
   min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 html {
@@ -300,7 +300,8 @@ textarea.form-control {
 }
 
 /* Container backgrounds */
-.container, .container-fluid {
+.container,
+.container-fluid {
   background: transparent !important;
 }
 
@@ -528,10 +529,18 @@ textarea.form-control {
 }
 
 /*  Enhanced text contrast for better readability */
-p, span, div, small {
+p,
+span,
+div,
+small {
   color: inherit !important;
 }
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #ffffff !important;
 }
 /*  Conversation list  */
@@ -566,7 +575,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Typing indicator animation */
 @keyframes typing-bounce {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
   }
   30% {

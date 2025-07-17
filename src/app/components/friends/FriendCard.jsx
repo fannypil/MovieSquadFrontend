@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import { useAuth } from '@/app/hooks/useAuth';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import ConditionalRender from '../auth/ConditionalRender';
-import AuthorizedButton from '../auth/AuthorizedButton';
+import { useAuth } from "@/app/hooks/useAuth";
+import React from "react";
+import { Link } from "react-router-dom";
+import ConditionalRender from "../auth/ConditionalRender";
+import AuthorizedButton from "../auth/AuthorizedButton";
 
-const FriendCard = ({ friend, onRemoveFriend, variant = "friend", groupData = null, showActions = true }) => {
+const FriendCard = ({
+  friend,
+  onRemoveFriend,
+  variant = "friend",
+  groupData = null,
+  showActions = true,
+}) => {
   const { user } = useAuth();
 
   const handleRemove = () => {
@@ -15,27 +21,30 @@ const FriendCard = ({ friend, onRemoveFriend, variant = "friend", groupData = nu
         onRemoveFriend(friend._id);
       }
     } else if (variant === "member" && groupData) {
-      if (window.confirm(`Remove ${friend.username} from ${groupData.groupName}?`)) {
+      if (
+        window.confirm(`Remove ${friend.username} from ${groupData.groupName}?`)
+      ) {
         onRemoveFriend(friend._id);
       }
     }
   };
 
   const isGroupAdmin = groupData?.isCurrentUserAdmin;
-  const isMemberAdmin = (friend._id === groupData?.adminId || friend.id === groupData?.adminId);
+  const isMemberAdmin =
+    friend._id === groupData?.adminId || friend.id === groupData?.adminId;
 
   // Avatar display component
   const renderAvatar = () => {
     if (friend.profilePicture) {
       return (
-        <img 
+        <img
           src={friend.profilePicture}
           alt={`${friend.username}'s avatar`}
           className="rounded-circle"
-          style={{ 
-            width: '60px', 
-            height: '60px',
-            objectFit: 'cover'
+          style={{
+            width: "60px",
+            height: "60px",
+            objectFit: "cover",
           }}
         />
       );
@@ -43,13 +52,13 @@ const FriendCard = ({ friend, onRemoveFriend, variant = "friend", groupData = nu
 
     // Fallback to initial if no profile picture
     return (
-      <div 
+      <div
         className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-        style={{ 
-          width: '60px', 
-          height: '60px', 
-          fontSize: '1.5rem',
-          backgroundColor: '#6c757d' // Default gray color
+        style={{
+          width: "60px",
+          height: "60px",
+          fontSize: "1.5rem",
+          backgroundColor: "#6c757d", // Default gray color
         }}
       >
         <i className="bi bi-person"></i>
@@ -58,27 +67,29 @@ const FriendCard = ({ friend, onRemoveFriend, variant = "friend", groupData = nu
   };
 
   return (
-    <div className="card h-100" style={{ backgroundColor: '#2c2c2c', border: '1px solid #444' }}>
+    <div
+      className="card h-100"
+      style={{ backgroundColor: "#2c2c2c", border: "1px solid #444" }}
+    >
       <div className="card-body d-flex flex-column">
         {/* Avatar and Info */}
         <div className="text-center mb-3">
-          <div className="mx-auto mb-2">
-            {renderAvatar()}
-          </div>
-          
+          <div className="mx-auto mb-2">{renderAvatar()}</div>
+
           <h6 className="text-white mb-1">
-            {friend.username || friend.name || 'Unknown User'}
+            {friend.username || friend.name || "Unknown User"}
             {/* Show admin badge for members */}
             {variant === "member" && isMemberAdmin && (
               <span className="badge bg-warning ms-2">Admin</span>
             )}
           </h6>
-          
+
           <p className="text-white small">
-            {variant === "friend" 
-              ? friend.email 
-              : `Joined ${new Date(friend.joinedAt || groupData?.createdAt).toLocaleDateString()}`
-            }
+            {variant === "friend"
+              ? friend.email
+              : `Joined ${new Date(
+                  friend.joinedAt || groupData?.createdAt
+                ).toLocaleDateString()}`}
           </p>
         </div>
 
@@ -93,7 +104,7 @@ const FriendCard = ({ friend, onRemoveFriend, variant = "friend", groupData = nu
                 <i className="bi bi-person me-2"></i>
                 View Profile
               </Link>
-              
+
               {/* Friend-specific actions */}
               {variant === "friend" && (
                 <ConditionalRender

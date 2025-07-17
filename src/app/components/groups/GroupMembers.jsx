@@ -1,367 +1,395 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import axios from "axios"
-import EmptyState from "../EmptyState"
-import { useAuth } from "@/app/hooks/useAuth"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import EmptyState from "../EmptyState";
+import { useAuth } from "@/app/hooks/useAuth";
 
 export default function GroupMembers({ groupId, currentUser, isCreator }) {
-    const { token } =useAuth()
-    const [members, setMembers] = useState([])
-    const [pendingRequests, setPendingRequests] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState(null)
-    const [searchTerm, setSearchTerm] = useState("")
-    const [activeTab, setActiveTab] = useState("members") // members, requests
-    const [processingIds, setProcessingIds] = useState(new Set())
+  const { token } = useAuth();
+  const [members, setMembers] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("members"); // members, requests
+  const [processingIds, setProcessingIds] = useState(new Set());
 
-    useEffect(() => {
-        if (token) {
-            fetchMembers()
-            if (isCreator) {
-                fetchPendingRequests()
-            }
-        }
-    }, [groupId, token])
+  useEffect(() => {
+    if (token) {
+      fetchMembers();
+      if (isCreator) {
+        fetchPendingRequests();
+      }
+    }
+  }, [groupId, token]);
 
-    const fetchProfilePictures = async (membersList) => {
+  const fetchProfilePictures = async (membersList) => {
     // Fetch profile for each member in parallel
     const updatedMembers = await Promise.all(
-        membersList.map(async (member) => {
-            try {
-                const response = await axios.get(
-                    `http://localhost:3001/api/user/profile/${member._id}`,
-                    { headers: { 'x-auth-token': token } }
-                );
-                return { ...member, profilePicture: response.data.profilePicture };
-            } catch (error) {
-                // fallback if error
-                return { ...member, profilePicture: null };
-            }
-        })
+      membersList.map(async (member) => {
+        try {
+          const response = await axios.get(
+            `http://localhost:3001/api/user/profile/${member._id}`,
+            { headers: { "x-auth-token": token } }
+          );
+          return { ...member, profilePicture: response.data.profilePicture };
+        } catch (error) {
+          // fallback if error
+          return { ...member, profilePicture: null };
+        }
+      })
     );
     setMembers(updatedMembers);
-};
+  };
 
-    const fetchMembers = async () => {
+  const fetchMembers = async () => {
     if (!token) return;
     try {
-        setIsLoading(true);
-        setError(null);
+      setIsLoading(true);
+      setError(null);
 
-        const response = await axios.get(
-            `http://localhost:3001/api/groups/${groupId}`,
-            { headers: { 'x-auth-token': token } }
-        );
+      const response = await axios.get(
+        `http://localhost:3001/api/groups/${groupId}`,
+        { headers: { "x-auth-token": token } }
+      );
 
-        const basicMembers = response.data.members || [];
-        // Fetch profile pictures after getting members
-        await fetchProfilePictures(basicMembers);
-
+      const basicMembers = response.data.members || [];
+      // Fetch profile pictures after getting members
+      await fetchProfilePictures(basicMembers);
     } catch (error) {
-        console.error('Error fetching members:', error);
-        setError('Failed to load members');
+      console.error("Error fetching members:", error);
+      setError("Failed to load members");
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
+  };
 
-    const fetchPendingRequests = async () => {
-        if (!token) return
-        try {
-            const response = await axios.get(
-                `http://localhost:3001/api/groups/${groupId}/requests`,
-                { headers: { 'x-auth-token': token } }
-            )
-            
-            console.log('Pending requests:', response.data)
-            setPendingRequests(response.data)
-        } catch (error) {
-            console.error('Error fetching pending requests:', error)
-        }
+  const fetchPendingRequests = async () => {
+    if (!token) return;
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/groups/${groupId}/requests`,
+        { headers: { "x-auth-token": token } }
+      );
+
+      console.log("Pending requests:", response.data);
+      setPendingRequests(response.data);
+    } catch (error) {
+      console.error("Error fetching pending requests:", error);
     }
+  };
 
-    const handleApproveRequest = async (userId) => {
-        if (!token) return
-        try {
-            setProcessingIds(prev => new Set(prev).add(userId))
-    
-            await axios.put(
-                `http://localhost:3001/api/groups/${groupId}/requests/${userId}/approve`,
-                {},
-                { headers: { 'x-auth-token': token } }
-            )
-            
-            // Remove from pending requests
-            setPendingRequests(prev => prev.filter(req => req._id !== userId))
-            
-            // Refresh members list
-            fetchMembers()
-            
-            alert('Request approved successfully!')
-        } catch (error) {
-            console.error('Error approving request:', error)
-            alert('Failed to approve request. Please try again.')
-        } finally {
-            setProcessingIds(prev => {
-                const newSet = new Set(prev)
-                newSet.delete(userId)
-                return newSet
-            })
-        }
+  const handleApproveRequest = async (userId) => {
+    if (!token) return;
+    try {
+      setProcessingIds((prev) => new Set(prev).add(userId));
+
+      await axios.put(
+        `http://localhost:3001/api/groups/${groupId}/requests/${userId}/approve`,
+        {},
+        { headers: { "x-auth-token": token } }
+      );
+
+      // Remove from pending requests
+      setPendingRequests((prev) => prev.filter((req) => req._id !== userId));
+
+      // Refresh members list
+      fetchMembers();
+
+      alert("Request approved successfully!");
+    } catch (error) {
+      console.error("Error approving request:", error);
+      alert("Failed to approve request. Please try again.");
+    } finally {
+      setProcessingIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
     }
+  };
 
-    const handleRejectRequest = async (userId) => {
-        if (!token) return
-        try {
-            setProcessingIds(prev => new Set(prev).add(userId))
-            
-            await axios.put(
-                `http://localhost:3001/api/groups/${groupId}/requests/${userId}/reject`,
-                {},
-                { headers: { 'x-auth-token': token } }
-            )
-            
-            // Remove from pending requests
-            setPendingRequests(prev => prev.filter(req => req._id !== userId))
-            
-            alert('Request rejected.')
-        } catch (error) {
-            console.error('Error rejecting request:', error)
-            alert('Failed to reject request. Please try again.')
-        } finally {
-            setProcessingIds(prev => {
-                const newSet = new Set(prev)
-                newSet.delete(userId)
-                return newSet
-            })
-        }
+  const handleRejectRequest = async (userId) => {
+    if (!token) return;
+    try {
+      setProcessingIds((prev) => new Set(prev).add(userId));
+
+      await axios.put(
+        `http://localhost:3001/api/groups/${groupId}/requests/${userId}/reject`,
+        {},
+        { headers: { "x-auth-token": token } }
+      );
+
+      // Remove from pending requests
+      setPendingRequests((prev) => prev.filter((req) => req._id !== userId));
+
+      alert("Request rejected.");
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      alert("Failed to reject request. Please try again.");
+    } finally {
+      setProcessingIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
     }
+  };
 
-    const handleRemoveMember = async (userId, username) => {
-        if (!confirm(`Remove ${username} from the group?`)) return
-        if (!token) return
-        
-        try {
-            setProcessingIds(prev => new Set(prev).add(userId))
-                        
-            await axios.delete(
-                `http://localhost:3001/api/groups/${groupId}/members/${userId}`,
-                { headers: { 'x-auth-token': token } }
-            )
-            
-            // Remove from members list
-            setMembers(prev => prev.filter(member => member._id !== userId))
-            
-            alert(`${username} has been removed from the group.`)
-        } catch (error) {
-            console.error('Error removing member:', error)
-            alert('Failed to remove member. Please try again.')
-        } finally {
-            setProcessingIds(prev => {
-                const newSet = new Set(prev)
-                newSet.delete(userId)
-                return newSet
-            })
-        }
+  const handleRemoveMember = async (userId, username) => {
+    if (!confirm(`Remove ${username} from the group?`)) return;
+    if (!token) return;
+
+    try {
+      setProcessingIds((prev) => new Set(prev).add(userId));
+
+      await axios.delete(
+        `http://localhost:3001/api/groups/${groupId}/members/${userId}`,
+        { headers: { "x-auth-token": token } }
+      );
+
+      // Remove from members list
+      setMembers((prev) => prev.filter((member) => member._id !== userId));
+
+      alert(`${username} has been removed from the group.`);
+    } catch (error) {
+      console.error("Error removing member:", error);
+      alert("Failed to remove member. Please try again.");
+    } finally {
+      setProcessingIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
     }
+  };
 
-    const handleMakeAdmin = async (userId, username) => {
-        if (!confirm(`Make ${username} an admin of this group?`)) return
-         if (!token) return
-        
-        try {
-            setProcessingIds(prev => new Set(prev).add(userId))
-            
-            await axios.put(
-                `http://localhost:3001/api/groups/${groupId}/members/${userId}/admin`,
-                {},
-                { headers: { 'x-auth-token': token } }
-            )
-            
-            // Refresh members list
-            fetchMembers()
-            
-            alert(`${username} is now an admin!`)
-        } catch (error) {
-            console.error('Error making admin:', error)
-            alert('Failed to make admin. Please try again.')
-        } finally {
-            setProcessingIds(prev => {
-                const newSet = new Set(prev)
-                newSet.delete(userId)
-                return newSet
-            })
-        }
+  const handleMakeAdmin = async (userId, username) => {
+    if (!confirm(`Make ${username} an admin of this group?`)) return;
+    if (!token) return;
+
+    try {
+      setProcessingIds((prev) => new Set(prev).add(userId));
+
+      await axios.put(
+        `http://localhost:3001/api/groups/${groupId}/members/${userId}/admin`,
+        {},
+        { headers: { "x-auth-token": token } }
+      );
+
+      // Refresh members list
+      fetchMembers();
+
+      alert(`${username} is now an admin!`);
+    } catch (error) {
+      console.error("Error making admin:", error);
+      alert("Failed to make admin. Please try again.");
+    } finally {
+      setProcessingIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
     }
+  };
 
-    const filteredMembers = members.filter(member =>
-        member.username.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  const filteredMembers = members.filter((member) =>
+    member.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    if (isLoading) {
-        return (
-            <div className="text-center p-4">
-                <div className="spinner-border text-warning" role="status">
-                    <span className="visually-hidden">Loading members...</span>
-                </div>
-                <p className="text-white mt-2">Loading members...</p>
-            </div>
-        )
-    }
-
-    if (error) {
-        return (
-            <div className="text-center p-4">
-                <div className="alert alert-danger" role="alert">
-                    {error}
-                </div>
-                <button 
-                    className="btn btn-warning btn-sm"
-                    onClick={fetchMembers}
-                >
-                    Try Again
-                </button>
-            </div>
-        )
-    }
-
+  if (isLoading) {
     return (
-        <div className="group-members">
-            {/* Tabs */}
-            <div className="mb-4">
-                <ul className="nav nav-tabs" style={{ borderBottom: '1px solid #444' }}>
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${activeTab === 'members' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('members')}
-                            style={{
-                                backgroundColor: activeTab === 'members' ? '#ff8c00' : 'transparent',
-                                color: activeTab === 'members' ? 'white' : '#ccc',
-                                border: '1px solid #444'
-                            }}
-                        >
-                             Members ({members.length})
-                        </button>
-                    </li>
-
-                </ul>
-            </div>
-
-            {/* Members Tab */}
-            {activeTab === 'members' && (
-                <div>
-                    {/* Search */}
-                    {members.length > 0 && (
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Search members..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{
-                                    backgroundColor: '#3c3c3c',
-                                    border: '1px solid #555',
-                                    color: 'white'
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* Members List */}
-                    {filteredMembers.length === 0 ? (
-                        <EmptyState 
-                            icon="people"
-                            title="No members found"
-                            description={searchTerm ? "No members found matching your search" : "No members in this group"}
-                            showButton={false}
-                            />
-                    ) : (
-                        <div className="members-list">
-                            {filteredMembers.map((member, index) => (
-                                <div 
-                                    key={member._id}
-                                    className="card mb-3"
-                                    style={{ backgroundColor: '#2c2c2c', border: '1px solid #444' }}
-                                >
-                                    <div className="card-body">
-                                        <div className="d-flex align-items-center">
-                                            {/* Profile Picture */}
-                                            <div className="me-3">
-                                                <img
-                                                    src={member.profilePicture || "https://via.placeholder.com/50"}
-                                                    alt={member.username}
-                                                    className="rounded-circle"
-                                                    style={{ 
-                                                        width: '50px', 
-                                                        height: '50px',
-                                                        objectFit: 'cover',
-                                                        border: '2px solid #ff8c00'
-                                                    }}
-                                                />
-                                            </div>
-
-                                            {/* Member Info */}
-                                            <div className="flex-grow-1">
-                                                <h6 className="mb-1 text-white">
-                                                    {member.username}
-                                                    {member.isAdmin && (
-                                                        <span className="badge bg-warning ms-2" style={{ fontSize: '0.7rem' }}>
-                                                             Admin
-                                                        </span>
-                                                    )}
-                                                    {member.isCreator && (
-                                                        <span className="badge bg-success ms-2" style={{ fontSize: '0.7rem' }}>
-                                                             Creator
-                                                        </span>
-                                                    )}
-                                                </h6>
-                                                <p className="mb-1 text-white" style={{ fontSize: '0.9rem' }}>
-                                                    {member.email}
-                                                </p>
-                                                <small className="text-white">
-                                                    Joined: {new Date(member.joinedAt || Date.now()).toLocaleDateString()}
-                                                </small>
-                                            </div>
-
-                                            {/* Actions */}
-                                            {isCreator && member._id !== currentUser._id && (
-                                                <div className="d-flex gap-2">
-                                                    {!member.isAdmin && (
-                                                        <button
-                                                            className="btn btn-outline-warning btn-sm"
-                                                            onClick={() => handleMakeAdmin(member._id, member.username)}
-                                                            disabled={processingIds.has(member._id)}
-                                                        >
-                                                            {processingIds.has(member._id) ? (
-                                                                <span className="spinner-border spinner-border-sm" role="status"></span>
-                                                            ) : (
-                                                                'Make Admin'
-                                                            )}
-                                                        </button>
-                                                    )}
-                                                    <button
-                                                        className="btn btn-outline-danger btn-sm"
-                                                        onClick={() => handleRemoveMember(member._id, member.username)}
-                                                        disabled={processingIds.has(member._id)}
-                                                    >
-                                                        {processingIds.has(member._id) ? (
-                                                            <span className="spinner-border spinner-border-sm" role="status"></span>
-                                                        ) : (
-                                                            'Remove'
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
+      <div className="text-center p-4">
+        <div className="spinner-border text-warning" role="status">
+          <span className="visually-hidden">Loading members...</span>
         </div>
-    )
+        <p className="text-white mt-2">Loading members...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center p-4">
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+        <button className="btn btn-warning btn-sm" onClick={fetchMembers}>
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group-members">
+      {/* Tabs */}
+      <div className="mb-4">
+        <ul className="nav nav-tabs" style={{ borderBottom: "1px solid #444" }}>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "members" ? "active" : ""}`}
+              onClick={() => setActiveTab("members")}
+              style={{
+                backgroundColor:
+                  activeTab === "members" ? "#ff8c00" : "transparent",
+                color: activeTab === "members" ? "white" : "#ccc",
+                border: "1px solid #444",
+              }}
+            >
+              Members ({members.length})
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      {/* Members Tab */}
+      {activeTab === "members" && (
+        <div>
+          {/* Search */}
+          {members.length > 0 && (
+            <div className="mb-4">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search members..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  backgroundColor: "#3c3c3c",
+                  border: "1px solid #555",
+                  color: "white",
+                }}
+              />
+            </div>
+          )}
+
+          {/* Members List */}
+          {filteredMembers.length === 0 ? (
+            <EmptyState
+              icon="people"
+              title="No members found"
+              description={
+                searchTerm
+                  ? "No members found matching your search"
+                  : "No members in this group"
+              }
+              showButton={false}
+            />
+          ) : (
+            <div className="members-list">
+              {filteredMembers.map((member, index) => (
+                <div
+                  key={member._id}
+                  className="card mb-3"
+                  style={{
+                    backgroundColor: "#2c2c2c",
+                    border: "1px solid #444",
+                  }}
+                >
+                  <div className="card-body">
+                    <div className="d-flex align-items-center">
+                      {/* Profile Picture */}
+                      <div className="me-3">
+                        <img
+                          src={
+                            member.profilePicture ||
+                            "https://via.placeholder.com/50"
+                          }
+                          alt={member.username}
+                          className="rounded-circle"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            border: "2px solid #ff8c00",
+                          }}
+                        />
+                      </div>
+
+                      {/* Member Info */}
+                      <div className="flex-grow-1">
+                        <h6 className="mb-1 text-white">
+                          {member.username}
+                          {member.isAdmin && (
+                            <span
+                              className="badge bg-warning ms-2"
+                              style={{ fontSize: "0.7rem" }}
+                            >
+                              Admin
+                            </span>
+                          )}
+                          {member.isCreator && (
+                            <span
+                              className="badge bg-success ms-2"
+                              style={{ fontSize: "0.7rem" }}
+                            >
+                              Creator
+                            </span>
+                          )}
+                        </h6>
+                        <p
+                          className="mb-1 text-white"
+                          style={{ fontSize: "0.9rem" }}
+                        >
+                          {member.email}
+                        </p>
+                        <small className="text-white">
+                          Joined:{" "}
+                          {new Date(
+                            member.joinedAt || Date.now()
+                          ).toLocaleDateString()}
+                        </small>
+                      </div>
+
+                      {/* Actions */}
+                      {isCreator && member._id !== currentUser._id && (
+                        <div className="d-flex gap-2">
+                          {!member.isAdmin && (
+                            <button
+                              className="btn btn-outline-warning btn-sm"
+                              onClick={() =>
+                                handleMakeAdmin(member._id, member.username)
+                              }
+                              disabled={processingIds.has(member._id)}
+                            >
+                              {processingIds.has(member._id) ? (
+                                <span
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                ></span>
+                              ) : (
+                                "Make Admin"
+                              )}
+                            </button>
+                          )}
+                          <button
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() =>
+                              handleRemoveMember(member._id, member.username)
+                            }
+                            disabled={processingIds.has(member._id)}
+                          >
+                            {processingIds.has(member._id) ? (
+                              <span
+                                className="spinner-border spinner-border-sm"
+                                role="status"
+                              ></span>
+                            ) : (
+                              "Remove"
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

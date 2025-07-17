@@ -1,145 +1,150 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { useAuth } from "@/app/hooks/useAuth"
+import { useState } from "react";
+import axios from "axios";
+import { useAuth } from "@/app/hooks/useAuth";
 
-export default function PostComments({postId, comments}) {
-    const {user, token} = useAuth()
-    const [commentsData, setCommentsData] = useState(comments || [])
-    const [newComment, setNewComment] = useState("")
-    const [isLoading, setIsLoading] = useState(false)
-    const [showComments, setShowComments] = useState(false)
+export default function PostComments({ postId, comments }) {
+  const { user, token } = useAuth();
+  const [commentsData, setCommentsData] = useState(comments || []);
+  const [newComment, setNewComment] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
-    const handleAddComment = async (e) => {
-        e.preventDefault()
-        
-        if (!newComment.trim()) {
-            alert('Please enter a comment')
-            return
-        }
+  const handleAddComment = async (e) => {
+    e.preventDefault();
 
-        setIsLoading(true)
-        try {
-            const response = await axios.post(
-                `http://localhost:3001/api/posts/${postId}/comments`,
-                { text: newComment.trim() },
-                {
-                    headers: {
-                        'x-auth-token': token
-                    }
-                }
-            )
-            
-            const updatedPostResponse = await axios.get(`http://localhost:3001/api/posts/${postId}`)
-            setCommentsData(updatedPostResponse.data.comments)
-            setNewComment("")
-            
-        } catch (error) {
-            console.error('Error adding comment:', error)
-            alert('Failed to add comment. Please try again.')
-        } finally {
-            setIsLoading(false)
-        }
+    if (!newComment.trim()) {
+      alert("Please enter a comment");
+      return;
     }
 
-    const handleDeleteComment = async (commentId) => {
-        if (!window.confirm('Are you sure you want to delete this comment?')) {
-            return
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `http://localhost:3001/api/posts/${postId}/comments`,
+        { text: newComment.trim() },
+        {
+          headers: {
+            "x-auth-token": token,
+          },
         }
+      );
 
-        try { 
-            const response = await axios.delete(
-                `http://localhost:3001/api/posts/${postId}/comments/${commentId}`,
-                {
-                    headers: {
-                        'x-auth-token': token 
-                    }
-                }
-            )
+      const updatedPostResponse = await axios.get(
+        `http://localhost:3001/api/posts/${postId}`
+      );
+      setCommentsData(updatedPostResponse.data.comments);
+      setNewComment("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      alert("Failed to add comment. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-            // Update comments data from response
-            setCommentsData(response.data.comments)
-            
-        } catch (error) {
-            console.error('Error deleting comment:', error)
-            alert('Failed to delete comment. Please try again.')
-        }
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) {
+      return;
     }
 
-    return (
-        <div className="mt-3">
-            {/* Comments Toggle */}
-            <button 
-                className="btn btn-link p-0 text-decoration-none"
-                onClick={() => setShowComments(!showComments)}
-            >
-                <small>Comments ({commentsData.length})</small>
-            </button>
+    try {
+      const response = await axios.delete(
+        `http://localhost:3001/api/posts/${postId}/comments/${commentId}`,
+        {
+          headers: {
+            "x-auth-token": token,
+          },
+        }
+      );
 
-            {showComments && (
-                <div className="mt-2">
-                    {/* Existing Comments */}
-                    <div className="mb-3" style={{maxHeight: '200px', overflowY: 'auto'}}>
-                        {commentsData.length === 0 ? (
-                            <small className="text-white">No comments yet.</small>
-                        ) : (
-                            commentsData.map(comment => (
-                                <div key={comment._id} className="border-bottom pb-2 mb-2">
-                                    <div className="d-flex justify-content-between align-items-start">
-                                        <div className="flex-grow-1">
-                                            <strong className="small text-white">
-                                                {comment.user?.username || comment.user?.name || 
-                                                 comment.author?.username || comment.author?.name || 
-                                                 'Unknown User'}
-                                            </strong>
-                                            <p className="mb-1 small text-white">{comment.text}</p>
-                                            <small className="text-white">
-                                                {new Date(comment.createdAt).toLocaleString()}
-                                            </small>
-                                        </div>
-                                        {/* Use user from useAuth instead of currentUser */}
-                                        {(user?._id === comment.user?._id || 
-                                          user?._id === comment.author?._id || 
-                                          user?.id === comment.user?.id || 
-                                          user?.id === comment.author?.id) && (
-                                            <button 
-                                                className="btn btn-sm btn-outline-danger ms-2"
-                                                onClick={() => handleDeleteComment(comment._id)}
-                                            >
-                                                ×
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            ))
-                        )}
+      // Update comments data from response
+      setCommentsData(response.data.comments);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      alert("Failed to delete comment. Please try again.");
+    }
+  };
+
+  return (
+    <div className="mt-3">
+      {/* Comments Toggle */}
+      <button
+        className="btn btn-link p-0 text-decoration-none"
+        onClick={() => setShowComments(!showComments)}
+      >
+        <small>Comments ({commentsData.length})</small>
+      </button>
+
+      {showComments && (
+        <div className="mt-2">
+          {/* Existing Comments */}
+          <div
+            className="mb-3"
+            style={{ maxHeight: "200px", overflowY: "auto" }}
+          >
+            {commentsData.length === 0 ? (
+              <small className="text-white">No comments yet.</small>
+            ) : (
+              commentsData.map((comment) => (
+                <div key={comment._id} className="border-bottom pb-2 mb-2">
+                  <div className="d-flex justify-content-between align-items-start">
+                    <div className="flex-grow-1">
+                      <strong className="small text-white">
+                        {comment.user?.username ||
+                          comment.user?.name ||
+                          comment.author?.username ||
+                          comment.author?.name ||
+                          "Unknown User"}
+                      </strong>
+                      <p className="mb-1 small text-white">{comment.text}</p>
+                      <small className="text-white">
+                        {new Date(comment.createdAt).toLocaleString()}
+                      </small>
                     </div>
-
-                    {/* Add Comment Form */}
-                    <form onSubmit={handleAddComment} className="d-flex">
-                        <input
-                            type="text"
-                            className="form-control form-control-sm me-2"
-                            placeholder="Add a comment..."
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            disabled={isLoading}
-                        />
-                        <button 
-                            type="submit" 
-                            className="btn btn-primary btn-sm"
-                            disabled={isLoading || !newComment.trim()}
-                        >
-                            {isLoading ? (
-                                <span className="spinner-border spinner-border-sm"></span>
-                            ) : (
-                                'Post'
-                            )}
-                        </button>
-                    </form>
+                    {/* Use user from useAuth instead of currentUser */}
+                    {(user?._id === comment.user?._id ||
+                      user?._id === comment.author?._id ||
+                      user?.id === comment.user?.id ||
+                      user?.id === comment.author?.id) && (
+                      <button
+                        className="btn btn-sm btn-outline-danger ms-2"
+                        onClick={() => handleDeleteComment(comment._id)}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                 </div>
+              ))
             )}
+          </div>
+
+          {/* Add Comment Form */}
+          <form onSubmit={handleAddComment} className="d-flex">
+            <input
+              type="text"
+              className="form-control form-control-sm me-2"
+              placeholder="Add a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              className="btn btn-primary btn-sm"
+              disabled={isLoading || !newComment.trim()}
+            >
+              {isLoading ? (
+                <span className="spinner-border spinner-border-sm"></span>
+              ) : (
+                "Post"
+              )}
+            </button>
+          </form>
         </div>
-    )
+      )}
+    </div>
+  );
 }

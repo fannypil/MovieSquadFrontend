@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -6,9 +6,9 @@ import TMDBContentCard from "../TMDBContentCard";
 import { useAuth } from "@/app/hooks/useAuth";
 import EmptyState from "../EmptyState";
 
-export default function WatchlistContent({ 
-  currentUser, 
-  userId = null // If userId is provided, we're viewing another user's collections
+export default function WatchlistContent({
+  currentUser,
+  userId = null, // If userId is provided, we're viewing another user's collections
 }) {
   const { token } = useAuth();
   const [favoriteMovies, setFavoriteMovies] = useState([]);
@@ -18,7 +18,8 @@ export default function WatchlistContent({
   const [viewedUser, setViewedUser] = useState(null);
 
   // Check if we're viewing another user's profile
-  const isViewingOtherUser = userId && userId !== currentUser?._id && userId !== currentUser?.id;
+  const isViewingOtherUser =
+    userId && userId !== currentUser?._id && userId !== currentUser?.id;
 
   useEffect(() => {
     if (token) {
@@ -31,17 +32,17 @@ export default function WatchlistContent({
 
     setIsLoading(true);
     try {
-      const endpoint = isViewingOtherUser 
-        ? `http://localhost:3001/api/user/profile/${userId}` 
+      const endpoint = isViewingOtherUser
+        ? `http://localhost:3001/api/user/profile/${userId}`
         : "http://localhost:3001/api/user/me";
-      
+
       const response = await axios.get(endpoint, {
         headers: { "x-auth-token": token },
       });
-      
+
       setFavoriteMovies(response.data.favoriteMovies || []);
       setWatchedContent(response.data.watchedContent || []);
-      
+
       if (isViewingOtherUser) {
         setViewedUser(response.data);
       }
@@ -56,11 +57,15 @@ export default function WatchlistContent({
 
   const handleRemoveContent = (contentId) => {
     if (isViewingOtherUser) return; // Can't remove from other user's lists
-    
+
     if (activeSubTab === "favorites") {
-      setFavoriteMovies(prev => prev.filter(item => item.tmdbId !== contentId));
+      setFavoriteMovies((prev) =>
+        prev.filter((item) => item.tmdbId !== contentId)
+      );
     } else {
-      setWatchedContent(prev => prev.filter(item => item.tmdbId !== contentId));
+      setWatchedContent((prev) =>
+        prev.filter((item) => item.tmdbId !== contentId)
+      );
     }
   };
 
@@ -69,29 +74,32 @@ export default function WatchlistContent({
       id: "favorites",
       label: "Favorites",
       icon: <i className="bi bi-heart-fill"></i>,
-      count: favoriteMovies.length
+      count: favoriteMovies.length,
     },
     {
       id: "watched",
       label: "Watched",
       icon: <i className="bi bi-check-circle"></i>,
-      count: watchedContent.length
-    }
+      count: watchedContent.length,
+    },
   ];
 
   const renderContent = () => {
-    const currentContent = activeSubTab === "favorites" ? favoriteMovies : watchedContent;
+    const currentContent =
+      activeSubTab === "favorites" ? favoriteMovies : watchedContent;
     const contentType = activeSubTab === "favorites" ? "favorites" : "watched";
     const displayUser = isViewingOtherUser ? viewedUser : currentUser;
-    
+
     if (currentContent.length === 0) {
       return (
         <EmptyState
           icon={activeSubTab === "favorites" ? "heart" : "check-circle"}
           title={`No ${contentType} yet`}
           description={
-            isViewingOtherUser 
-              ? `${displayUser?.username || 'This user'} hasn't added anything to their ${contentType} yet.`
+            isViewingOtherUser
+              ? `${
+                  displayUser?.username || "This user"
+                } hasn't added anything to their ${contentType} yet.`
               : `Start adding movies and shows to your ${contentType}!`
           }
           showButton={false}
@@ -110,9 +118,9 @@ export default function WatchlistContent({
                 poster_path: item.posterPath,
                 media_type: item.tmdbType,
                 tmdbType: item.tmdbType,
-                overview: '',
-                release_date: '',
-                vote_average: 0
+                overview: "",
+                release_date: "",
+                vote_average: 0,
               }}
               variant={contentType}
               currentUser={currentUser}
@@ -143,13 +151,16 @@ export default function WatchlistContent({
       <div className="mb-4">
         <h5 className="text-white mb-1">
           <i className="bi bi-camera-reels me-2 text-warning"></i>
-          {isViewingOtherUser ? `${displayUser?.username || 'User'}'s Collections` : "My Collections"}
+          {isViewingOtherUser
+            ? `${displayUser?.username || "User"}'s Collections`
+            : "My Collections"}
         </h5>
         <p className="text-light small mb-0">
-          {isViewingOtherUser 
-            ? `Movies and shows collected by ${displayUser?.username || 'this user'}`
-            : "Your favorite and watched movies and TV shows"
-          }
+          {isViewingOtherUser
+            ? `Movies and shows collected by ${
+                displayUser?.username || "this user"
+              }`
+            : "Your favorite and watched movies and TV shows"}
         </p>
       </div>
 
@@ -165,24 +176,27 @@ export default function WatchlistContent({
                   }`}
                   onClick={() => setActiveSubTab(tab.id)}
                   style={{
-                    backgroundColor: activeSubTab === tab.id 
-                      ? 'rgba(245, 158, 11, 0.2)' 
-                      : 'transparent',
-                    borderBottom: activeSubTab === tab.id 
-                      ? '3px solid #f59e0b' 
-                      : '3px solid transparent',
-                    color: activeSubTab === tab.id ? '#f59e0b' : '#9ca3af'
+                    backgroundColor:
+                      activeSubTab === tab.id
+                        ? "rgba(245, 158, 11, 0.2)"
+                        : "transparent",
+                    borderBottom:
+                      activeSubTab === tab.id
+                        ? "3px solid #f59e0b"
+                        : "3px solid transparent",
+                    color: activeSubTab === tab.id ? "#f59e0b" : "#9ca3af",
                   }}
                 >
                   <span className="me-2">{tab.icon}</span>
                   {tab.label}
-                  <span 
-                    className="badge ms-2" 
+                  <span
+                    className="badge ms-2"
                     style={{
-                      backgroundColor: activeSubTab === tab.id 
-                        ? '#f59e0b' 
-                        : 'rgba(156, 163, 175, 0.3)',
-                      color: activeSubTab === tab.id ? '#000' : '#fff'
+                      backgroundColor:
+                        activeSubTab === tab.id
+                          ? "#f59e0b"
+                          : "rgba(156, 163, 175, 0.3)",
+                      color: activeSubTab === tab.id ? "#000" : "#fff",
                     }}
                   >
                     {tab.count}

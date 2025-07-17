@@ -10,10 +10,10 @@ const GENRES = [
 ];
 
 export default function TMDBFilter({ filters, setFilters, contentType }) {
-    const currentYear = new Date().getFullYear();
-    const [errors, setErrors] = useState({});
+  const currentYear = new Date().getFullYear();
+  const [errors, setErrors] = useState({});
 
-      const validate = (field, value) => {
+  const validate = (field, value) => {
     let error = "";
     if (field === "year") {
       if (value && (isNaN(value) || value < 1900 || value > currentYear)) {
@@ -25,10 +25,9 @@ export default function TMDBFilter({ filters, setFilters, contentType }) {
         error = "Rating must be between 0 and 10";
       }
     }
-    setErrors(prev => ({ ...prev, [field]: error }));
+    setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
- 
   return (
     <div className="card mb-4">
       <div className="card-body">
@@ -38,10 +37,14 @@ export default function TMDBFilter({ filters, setFilters, contentType }) {
             <select
               className="form-select"
               value={filters.genre}
-              onChange={e => setFilters(f => ({ ...f, genre: e.target.value }))}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, genre: e.target.value }))
+              }
             >
-              {GENRES.map(g => (
-                <option key={g.id} value={g.id}>{g.name}</option>
+              {GENRES.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
               ))}
             </select>
           </div>
@@ -54,8 +57,8 @@ export default function TMDBFilter({ filters, setFilters, contentType }) {
               value={filters.year}
               min={1900}
               max={currentYear}
-              onChange={e => {
-                setFilters(f => ({ ...f, year: e.target.value }));
+              onChange={(e) => {
+                setFilters((f) => ({ ...f, year: e.target.value }));
                 validate("year", e.target.value);
               }}
             />
@@ -73,8 +76,8 @@ export default function TMDBFilter({ filters, setFilters, contentType }) {
               step={0.1}
               placeholder="e.g. 7.5"
               value={filters.minRating || ""}
-              onChange={e => {
-                setFilters(f => ({ ...f, minRating: e.target.value }));
+              onChange={(e) => {
+                setFilters((f) => ({ ...f, minRating: e.target.value }));
                 validate("minRating", e.target.value);
               }}
             />
@@ -87,7 +90,9 @@ export default function TMDBFilter({ filters, setFilters, contentType }) {
             <select
               className="form-select"
               value={filters.sortBy}
-              onChange={e => setFilters(f => ({ ...f, sortBy: e.target.value }))}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, sortBy: e.target.value }))
+              }
             >
               <option value="popularity.desc">Popularity</option>
               <option value="vote_average.desc">Rating</option>
@@ -99,14 +104,23 @@ export default function TMDBFilter({ filters, setFilters, contentType }) {
           <button
             className="btn btn-outline-secondary me-2"
             onClick={() => {
-              setFilters({ genre: "", year: "", minRating: "", sortBy: "popularity.desc" });
+              setFilters({
+                genre: "",
+                year: "",
+                minRating: "",
+                sortBy: "popularity.desc",
+              });
               setErrors({});
             }}
           >
             Clear Filters
           </button>
           <span className="text-light ms-2">
-            Active Filters: {Object.entries(filters).filter(([k, v]) => v).map(([k, v]) => `${k}: ${v}`).join(", ") || "None"}
+            Active Filters:{" "}
+            {Object.entries(filters)
+              .filter(([k, v]) => v)
+              .map(([k, v]) => `${k}: ${v}`)
+              .join(", ") || "None"}
           </span>
         </div>
       </div>

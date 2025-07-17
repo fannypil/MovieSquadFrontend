@@ -1,6 +1,9 @@
 import React, { useRef, useEffect } from "react";
 
-export default function CanvasLoader({ fullscreen = true, text = "Loading..." }) {
+export default function CanvasLoader({
+  fullscreen = true,
+  text = "Loading...",
+}) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export default function CanvasLoader({ fullscreen = true, text = "Loading..." })
         ctx.fillStyle = "rgba(20, 20, 30, 0.85)";
         ctx.fillRect(0, 0, width, height);
       }
-        for (let i = 0; i < numDots; i++) {
+      for (let i = 0; i < numDots; i++) {
         const theta = angle + (i * (2 * Math.PI)) / numDots;
         const x = width / 2 + radius * Math.cos(theta);
         const y = height / 2 + radius * Math.sin(theta);
@@ -44,7 +47,7 @@ export default function CanvasLoader({ fullscreen = true, text = "Loading..." })
         ctx.shadowBlur = 16;
         ctx.fill();
         ctx.shadowBlur = 0;
-        }
+      }
 
       // Custom loading text
       ctx.font = fullscreen ? "bold 2rem sans-serif" : "bold 1rem sans-serif";
@@ -66,7 +69,6 @@ export default function CanvasLoader({ fullscreen = true, text = "Loading..." })
       if (fullscreen) window.removeEventListener("resize", resize);
     };
   }, [fullscreen, text]);
-  
 
   return (
     <div
@@ -89,7 +91,7 @@ export default function CanvasLoader({ fullscreen = true, text = "Loading..." })
           display: "block",
           margin: "auto",
           borderRadius: "16px",
-        boxShadow: fullscreen ? "0 0 40px #8b5cf644" : "none",
+          boxShadow: fullscreen ? "0 0 40px #8b5cf644" : "none",
         }}
         aria-label="Loading animation"
       />
