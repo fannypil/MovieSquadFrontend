@@ -24,6 +24,13 @@ A modern social platform for movie and TV show enthusiasts built with Next.js. C
 - **Movie Groups**: Create and join groups based on interests
 - **Group Posts**: Share content within specific communities
 - **Group Management**: Admin controls for group moderation
+- **Invite Members**: Invite friends to join groups, accept/reject invitations from notifications
+- **Shared Watchlist**: Collaborate on group watchlists
+
+### Notifications
+- **Group Invitations**: Accept or reject group invites directly from notifications
+- **Status Persistence**: Invitation status (accepted/rejected) is shown in the UI, even after refresh
+- **Real-time Updates**: Notifications for group activity, friend requests, and more
 
 ## 🛠️ Tech Stack
 
@@ -106,20 +113,23 @@ The frontend is configured to communicate with the MovieSquad backend API:
   - `/api/posts/:id/like` - Post likes
   - `/api/posts/:id/comments` - Post comments
 
-### Environment Variables
-
-```env
-# Add any environment variables here
-NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_TMDB_API_KEY=your_tmdb_api_key
-```
-
 ## 📱 Usage Guide
 
 ### Authentication
 1. Visit the homepage
 2. Sign up for a new account or sign in with existing credentials
-3. Your session will be saved locally
+
+### Groups
+- **Create/Join Groups**: Use the Groups tab or page to find and join groups.
+- **Invite Members**: On the group members tab, click "Invite Members" to send invitations.
+- **Accept/Reject Invitations**: Go to Notifications, and use the Accept/Reject buttons for group invites. Status is persisted locally.
+
+### Notifications
+- **View Notifications**: Access all activity from the Notifications page.
+- **Group Invitation Status**: Accept/reject group invites and see status even after refresh.
+
+### Watchlists
+- **Manage Watchlists**: Add/remove movies and shows from your personal or group watchlists.
 
 ### Creating Posts
 1. Navigate to your profile
@@ -140,103 +150,28 @@ NEXT_PUBLIC_TMDB_API_KEY=your_tmdb_api_key
 - **View Stats**: See your posts, friends, and watched content
 - **Manage Content**: View and organize your posts
 
-## 🎨 Components Overview
-
-### Core Components
-
-#### `Dashboard.jsx`
-Main application component handling authentication state and routing between login/profile views.
-
-#### `ProfileHeader.jsx`
-Displays user information, stats, and provides access to post creation and profile management.
-
-#### `AddPostModal.jsx`
-Modal component for creating new posts with category selection and content linking.
-
-#### `PostCard.jsx`
-Individual post display with integrated likes and comments functionality.
-
-### Authentication Components
-
-#### `SignIn.jsx` & `SignUp.jsx`
-Form components with validation, error handling, and success feedback.
-
 ## 🔄 Data Flow
 
-1. **Authentication**: JWT tokens stored in localStorage
-2. **Posts**: Real-time updates after create/like/comment actions
-3. **State Management**: Local component state with prop drilling
-4. **API Communication**: Axios with consistent error handling
-
-## 🚧 Development
-
-### Available Scripts
-
-```bash
-# Development server
-npm run dev
-
-# Production build
-npm run build
-
-# Start production server
-npm start
-
-# Linting
-npm run lint
-```
+- **Authentication**: JWT tokens stored in localStorage
+- **Posts/Groups**: Real-time updates after create/like/comment actions
+- **Notifications**: Local state and API sync for invitation status
 
 ### Code Style
 
-- **Components**: Functional components with hooks
-- **Styling**: Bootstrap classes with custom styles
-- **Error Handling**: Try-catch blocks with user feedback
-- **Loading States**: Spinner indicators for async operations
+- Functional components with hooks
+- Bootstrap classes with custom styles
+- Error handling and loading spinners for async operations
+
 
 ## 🔐 Security
 
-- **Authentication**: JWT token-based authentication
-- **Data Validation**: Client-side form validation
-- **Error Handling**: Secure error messages without sensitive data exposure
-- **CORS**: Configured for backend communication
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -m 'Add feature'`
-4. Push to branch: `git push origin feature-name`
-5. Submit a pull request
+- JWT token-based authentication
+- Client-side form validation
+- Secure error messages
 
 ## 📝 License
 
 This project is part of an academic assignment for Android Development course.
-
-## 🎯 Roadmap
-
-### Upcoming Features
-- [ ] Group functionality
-- [ ] Advanced search and filtering
-- [ ] Real-time notifications
-- [ ] Dark/light theme toggle
-- [ ] Mobile responsiveness improvements
-- [ ] TMDB API integration for content search
-- [ ] Image upload for posts
-- [ ] User following system
-
-### Technical Improvements
-- [ ] TypeScript migration
-- [ ] State management with Redux/Zustand
-- [ ] Unit and integration tests
-- [ ] Performance optimizations
-- [ ] PWA capabilities
-
-## 📞 Support
-
-For questions or issues:
-- Create an issue in the repository
-- Contact the development team
-- Check the backend repository for API-related issues
 
 ---
 
