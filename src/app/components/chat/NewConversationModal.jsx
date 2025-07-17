@@ -191,12 +191,6 @@ export default function NewConversationModal({ isOpen, onClose, onConversationCr
                                         }}
                                         onClick={() => setSelectedUser(user)}
                                     >
-                                        <img
-                                            src={user.profilePicture || 'https://via.placeholder.com/40'}
-                                            alt={user.username}
-                                            className="rounded-circle me-3"
-                                            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
-                                        />
                                         <div>
                                             <div className="fw-semibold text-white">{user.username}</div>
                                             <small className={selectedUser?._id === user._id ? 'text-white-50' : 'text-muted'}>
