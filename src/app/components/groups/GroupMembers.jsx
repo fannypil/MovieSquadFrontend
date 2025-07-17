@@ -308,12 +308,12 @@ export default function GroupMembers({ groupId, currentUser, isCreator }) {
                                                     {member.username}
                                                     {member.isAdmin && (
                                                         <span className="badge bg-warning ms-2" style={{ fontSize: '0.7rem' }}>
-                                                            👑 Admin
+                                                             Admin
                                                         </span>
                                                     )}
                                                     {member.isCreator && (
                                                         <span className="badge bg-success ms-2" style={{ fontSize: '0.7rem' }}>
-                                                            🎯 Creator
+                                                             Creator
                                                         </span>
                                                     )}
                                                 </h6>

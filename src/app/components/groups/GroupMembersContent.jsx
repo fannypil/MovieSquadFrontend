@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FriendCard from "../friends/FriendCard";
 import InviteToGroupModal from "./InviteToGroupModal";
 
@@ -9,10 +9,23 @@ export default function GroupMembersContent({ group, members, currentUser }) {
   const isAdmin = group?.admin?._id === currentUser?._id || group?.admin?.id === currentUser?.id;
   const isMember = members.some(m => (m._id || m.id) === currentUser._id);
 
+  // Debug: log props
+  useEffect(() => {
+    console.log("GroupMembersContent mounted");
+    console.log("group:", group);
+    console.log("members:", members);
+    console.log("currentUser:", currentUser);
+  }, [group, members, currentUser]);
+
+   // Debug: log role
+  useEffect(() => {
+    console.log("isAdmin:", isAdmin, "isMember:", isMember);
+  }, [isAdmin, isMember]);
+
   const handleRemoveMember = async (memberId) => {
     try {
-      // TODO: Implement remove member API call
       console.log('Removing member:', memberId, 'from group:', group._id);
+    
     } catch (error) {
       console.error('Error removing member:', error);
     }
@@ -22,7 +35,11 @@ export default function GroupMembersContent({ group, members, currentUser }) {
     // Optionally show success message or refresh data
     console.log('Invitations sent successfully!');
   };
-    return (
+  // Debug: log modal state
+  useEffect(() => {
+    console.log("showInviteModal changed:", showInviteModal);
+  }, [showInviteModal]);
+   return (
     <>
       <div>
         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -31,11 +48,14 @@ export default function GroupMembersContent({ group, members, currentUser }) {
             </h5>          
           {/* Invite Button - Show for admins and members */}
           {(isAdmin || isMember) && (
-            <button 
+            <button
               className="btn btn-warning btn-sm"
-              onClick={() => setShowInviteModal(true)}
+              onClick={() => {
+                console.log("Invite button clicked");
+                setShowInviteModal(true);
+              }}
             >
-            <i className="bi bi-envelope-plus me-2"></i>Invite Members
+              <i className="bi bi-envelope-plus me-2"></i>Invite Members
             </button>
           )}
         </div>

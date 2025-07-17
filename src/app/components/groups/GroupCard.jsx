@@ -97,10 +97,7 @@ export default function GroupCard({
                         <i className="bi bi-people me-1"></i>
                         <small>{group.members?.length || 0} members</small>
                     </div>
-                    <div className="d-flex align-items-center text-light opacity-75">
-                        <i className="bi bi-chat-text me-1"></i>
-                        <small>{group.postsCount || 0} posts</small>
-                    </div>
+                   
                     <div className="d-flex align-items-center text-light opacity-75">
                         <i className="bi bi-clock me-1"></i>
                         <small>{formatDate(group.createdAt)}</small>

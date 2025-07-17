@@ -11,6 +11,7 @@ import GroupMembers from "../components/groups/GroupMembers"
 import GroupSharedWatchlist from "../components/groups/GroupSharedWatchlist"
 import GroupStatistics from "../components/groups/GroupStatistics"
 import CanvasLoader from "../components/CanvasLoader"
+import GroupMembersContent from "../components/groups/GroupMembersContent"
 
 export default function ViewGroup() {
   const { groupId } = useParams()
@@ -149,11 +150,10 @@ export default function ViewGroup() {
         )
       case "members":
         return (
-          <GroupMembers
-            groupId={groupId}
+           <GroupMembersContent
+            group={group}
+            members={group?.members || []}
             currentUser={user}
-            isCreator={isGroupAdmin}
-            onMemberAdded={handleMemberAdded}
           />
         )
       case "watchlist":
