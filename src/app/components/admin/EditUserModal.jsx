@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import BaseModal from "../BaseModal";
+import { SaveCancelFooter } from "../ModalFooters";
 
 export default function EditUserModal({ user, onSave, onCancel, isLoading }) {
   const [form, setForm] = useState({
@@ -35,98 +37,77 @@ export default function EditUserModal({ user, onSave, onCancel, isLoading }) {
   if (!user) return null;
 
   return (
-    <div className="modal show d-block" tabIndex="-1">
-      <div className="modal-dialog">
-        <div className="modal-content glass-card">
-          <div className="modal-header">
-            <h5 className="modal-title">Edit User</h5>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={onCancel}
-            ></button>
-          </div>
-          <div className="modal-body">
-            <form onSubmit={handleSubmit}>
-              <div className="mb-2">
-                <label className="form-label">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  className="form-control"
-                  value={form.username}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  className="form-control"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Role</label>
-                <select
-                  name="role"
-                  className="form-select"
-                  value={form.role}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="user">User</option>
-                  <option value="groupAdmin">Group Admin</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Bio</label>
-                <textarea
-                  name="bio"
-                  className="form-control"
-                  value={form.bio}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Profile Picture URL</label>
-                <input
-                  type="text"
-                  name="profilePicture"
-                  className="form-control"
-                  value={form.profilePicture}
-                  onChange={handleChange}
-                />
-              </div>
-            </form>
-          </div>
-          <div className="modal-footer">
-            <button
-              className="btn btn-secondary"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={handleSubmit}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <span className="spinner-border spinner-border-sm"></span>
-              ) : (
-                "Save Changes"
-              )}
-            </button>
-          </div>
+    <BaseModal
+      isOpen={true}
+      onClose={onCancel}
+      title="Edit User"
+      isLoading={isLoading}
+      theme="dark"
+      footer={
+        <SaveCancelFooter
+          onCancel={onCancel}
+          onSave={handleSubmit}
+          isLoading={isLoading}
+        />
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <div className="mb-2">
+          <label className="form-label">Username</label>
+          <input
+            type="text"
+            name="username"
+            className="form-control"
+            value={form.username}
+            onChange={handleChange}
+            required
+          />
         </div>
-      </div>
-    </div>
+        <div className="mb-2">
+          <label className="form-label">Email</label>
+          <input
+            type="email"
+            name="email"
+            className="form-control"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-2">
+          <label className="form-label">Role</label>
+          <select
+            name="role"
+            className="form-select"
+            value={form.role}
+            onChange={handleChange}
+            required
+          >
+            <option value="user">User</option>
+            <option value="groupAdmin">Group Admin</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div className="mb-2">
+          <label className="form-label">Bio</label>
+          <textarea
+            name="bio"
+            className="form-control"
+            value={form.bio}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="mb-2">
+          <label className="form-label">Profile Picture URL</label>
+          <input
+            type="text"
+            name="profilePicture"
+            className="form-control"
+            value={form.profilePicture}
+            onChange={handleChange}
+          />
+        </div>
+      </form>
+    </BaseModal>
   );
 }

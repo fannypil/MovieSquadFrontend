@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "@/app/hooks/useAuth";
+import BaseModal from "../BaseModal";
+import { SaveCancelFooter } from "../ModalFooters";
 
 export default function ProfileSettingsModal({ isOpen, onClose, currentUser }) {
   const { token } = useAuth();
@@ -63,150 +65,109 @@ export default function ProfileSettingsModal({ isOpen, onClose, currentUser }) {
   if (!isOpen) return null;
 
   return (
-    <div
-      className="modal d-block"
-      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Profile Settings"
+      isLoading={isLoading}
+      theme="dark"
+      footer={
+        <SaveCancelFooter
+          onCancel={onClose}
+          onSave={handleSave}
+          isLoading={isLoading}
+        />
+      }
     >
-      <div className="modal-dialog">
+      <div className="mb-4">
+        <h6 className="text-white mb-3">Privacy Settings</h6>
+
+        {/* Public Profile */}
         <div
-          className="modal-content"
-          style={{ backgroundColor: "#2c2c2c", border: "1px solid #444" }}
+          className="d-flex justify-content-between align-items-center mb-3 p-3 rounded"
+          style={{ backgroundColor: "#3c3c3c" }}
         >
-          <div
-            className="modal-header"
-            style={{ borderBottom: "1px solid #444" }}
-          >
-            <h5 className="modal-title text-white">Profile Settings</h5>
-            <button
-              type="button"
-              className="btn-close btn-close-white"
-              onClick={onClose}
-              disabled={isLoading}
-            ></button>
-          </div>
-
-          <div className="modal-body">
-            <div className="mb-4">
-              <h6 className="text-white mb-3"> Privacy Settings</h6>
-
-              {/* Public Profile */}
-              <div
-                className="d-flex justify-content-between align-items-center mb-3 p-3 rounded"
-                style={{ backgroundColor: "#3c3c3c" }}
-              >
-                <div>
-                  <strong className="text-white">Public Profile</strong>
-                  <div className="text-muted small">
-                    Allow other users to view your profile
-                  </div>
-                </div>
-                <div className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="isPublic"
-                    checked={settings.isPublic}
-                    onChange={() => handleToggle("isPublic")}
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-
-              {/* Show Watched Content */}
-              <div
-                className="d-flex justify-content-between align-items-center mb-3 p-3 rounded"
-                style={{ backgroundColor: "#3c3c3c" }}
-              >
-                <div>
-                  <strong className="text-white">Show Watched Movies</strong>
-                  <div className="text-muted small">
-                    Display your watched movies list to others
-                  </div>
-                </div>
-                <div className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="showWatchedContent"
-                    checked={settings.showWatchedContent}
-                    onChange={() => handleToggle("showWatchedContent")}
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-
-              {/* Show Favorites */}
-              <div
-                className="d-flex justify-content-between align-items-center mb-3 p-3 rounded"
-                style={{ backgroundColor: "#3c3c3c" }}
-              >
-                <div>
-                  <strong className="text-white">Show Favorite Genres</strong>
-                  <div className="text-muted small">
-                    Display your favorite genres to others
-                  </div>
-                </div>
-                <div className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="showFavorites"
-                    checked={settings.showFavorites}
-                    onChange={() => handleToggle("showFavorites")}
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Preview */}
-            <div className="alert alert-info">
-              <strong> Preview:</strong>
-              <br />
-              {settings.isPublic
-                ? "Your profile is visible to all users"
-                : "Your profile is private (only you can see it)"}
-              <br />
-              {settings.showWatchedContent
-                ? "Watched movies are visible"
-                : "Watched movies are hidden"}
-              <br />
-              {settings.showFavorites
-                ? "Favorite genres are visible"
-                : "Favorite genres are hidden"}
+          <div>
+            <strong className="text-white">Public Profile</strong>
+            <div className="text-muted small">
+              Allow other users to view your profile
             </div>
           </div>
+          <div className="form-check form-switch">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="isPublic"
+              checked={settings.isPublic}
+              onChange={() => handleToggle("isPublic")}
+              disabled={isLoading}
+            />
+          </div>
+        </div>
 
-          <div className="modal-footer" style={{ borderTop: "1px solid #444" }}>
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              onClick={onClose}
+        {/* Show Watched Content */}
+        <div
+          className="d-flex justify-content-between align-items-center mb-3 p-3 rounded"
+          style={{ backgroundColor: "#3c3c3c" }}
+        >
+          <div>
+            <strong className="text-white">Show Watched Movies</strong>
+            <div className="text-muted small">
+              Display your watched movies list to others
+            </div>
+          </div>
+          <div className="form-check form-switch">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="showWatchedContent"
+              checked={settings.showWatchedContent}
+              onChange={() => handleToggle("showWatchedContent")}
               disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleSave}
+            />
+          </div>
+        </div>
+
+        {/* Show Favorites */}
+        <div
+          className="d-flex justify-content-between align-items-center mb-3 p-3 rounded"
+          style={{ backgroundColor: "#3c3c3c" }}
+        >
+          <div>
+            <strong className="text-white">Show Favorite Genres</strong>
+            <div className="text-muted small">
+              Display your favorite genres to others
+            </div>
+          </div>
+          <div className="form-check form-switch">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="showFavorites"
+              checked={settings.showFavorites}
+              onChange={() => handleToggle("showFavorites")}
               disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <span
-                    className="spinner-border spinner-border-sm me-2"
-                    role="status"
-                  ></span>
-                  Saving...
-                </>
-              ) : (
-                " Save"
-              )}
-            </button>
+            />
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Preview */}
+      <div className="alert alert-info">
+        <strong>Preview:</strong>
+        <br />
+        {settings.isPublic
+          ? "Your profile is visible to all users"
+          : "Your profile is private (only you can see it)"}
+        <br />
+        {settings.showWatchedContent
+          ? "Watched movies are visible"
+          : "Watched movies are hidden"}
+        <br />
+        {settings.showFavorites
+          ? "Favorite genres are visible"
+          : "Favorite genres are hidden"}
+      </div>
+    </BaseModal>
   );
 }
