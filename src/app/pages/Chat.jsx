@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { io } from "socket.io-client";
+import { useSocket } from "../hooks/useSocket";
+import { useChat } from "../hooks/useChat";
 import axios from "axios";
 import ConversationList from "../components/chat/ConversationList";
 import ChatWindow from "../components/chat/ChatWindow";
@@ -11,250 +12,97 @@ import NewConversationModal from "../components/chat/NewConversationModal";
 import CanvasLoader from "../components/CanvasLoader";
 
 export default function Chat() {
-  const [selectedConversation, setSelectedConversation] = useState(null);
   const [showNewConversationModal, setShowNewConversationModal] =
     useState(false);
-  const [socket, setSocket] = useState(null);
-  const [conversations, setConversations] = useState([]);
-  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-
-  // Use refs to get current values in socket event listeners
-  const selectedConversationRef = useRef(selectedConversation);
-  const userRef = useRef(null);
-  const socketRef = useRef(null);
-
   const { user, token, isAuthenticated } = useAuth();
-
-  // Update refs when state changes
-  useEffect(() => {
-    selectedConversationRef.current = selectedConversation;
-  }, [selectedConversation]);
-
-  useEffect(() => {
-    userRef.current = user;
-  }, [user]);
 
   // Memoize user data to prevent unnecessary re-renders
   const stableUser = useMemo(() => user, [user?.id, user?._id, user?.username]);
   const stableToken = useMemo(() => token, [token]);
 
+  // Initialize socket using useSocket hook
+  const { socket, isConnected } = useSocket(stableUser, stableToken);
+  // Initialize chat functionality using useChat hook
+  const {
+    conversations,
+    messages,
+    selectedConversation,
+    setConversations,
+    setSelectedConversation,
+    joinChat,
+    sendMessage,
+  } = useChat(socket, stableUser);
+
   // Load conversations from backend
-  const loadConversations = async () => {
-    try {
-      if (!stableToken) {
-        console.log("No token available");
-        return;
-      }
-
-      console.log("Loading conversations from backend...");
-      const response = await axios.get(
-        "http://localhost:3001/api/conversations/me",
-        {
-          headers: { "x-auth-token": stableToken },
-        }
-      );
-
-      console.log("Loaded conversations:", response.data.length);
-      setConversations(response.data);
-    } catch (error) {
-      console.error("Error loading conversations:", error);
-      if (error.response?.status === 401) {
-        console.log("Token invalid, redirecting to login");
-        navigate("/");
-      }
-    }
-  };
-
-  // Helper function to find user by ID
-  const findUserById = (userId) => {
-    return {
-      _id: userId,
-      username: "User " + userId.substring(0, 6),
-      email: "user@example.com",
-      profilePicture: "https://via.placeholder.com/40",
-    };
-  };
-
-  // Initialize socket connection once
   useEffect(() => {
-    if (!isAuthenticated || !stableUser || !stableToken) {
+    const loadConversations = async () => {
+      try {
+        if (!stableToken) {
+          console.log("No token available");
+          return;
+        }
+
+        console.log("Loading conversations from backend...");
+        const response = await axios.get(
+          "http://localhost:3001/api/conversations/me",
+          {
+            headers: { "x-auth-token": stableToken },
+          }
+        );
+
+        console.log("Loaded conversations:", response.data.length);
+        setConversations(response.data);
+      } catch (error) {
+        console.error("Error loading conversations:", error);
+        if (error.response?.status === 401) {
+          console.log("Token invalid, redirecting to login");
+          navigate("/");
+        }
+      }
+    };
+
+    if (isAuthenticated && stableToken && isConnected) {
+      loadConversations();
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, stableToken, isConnected, setConversations, navigate]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
       console.log("Not authenticated, redirecting to login");
       navigate("/");
-      return;
     }
-
-    // Prevent multiple socket connections
-    if (socketRef.current) {
-      console.log(" Socket already exists, skipping initialization");
-      return;
-    }
-
-    console.log(
-      "Initializing socket connection for user:",
-      stableUser.username
-    );
-
-    // Load conversations from backend
-    loadConversations();
-
-    // Initialize Socket.io connection
-    const newSocket = io("http://localhost:3001", {
-      auth: {
-        token: stableToken,
-      },
-    });
-
-    socketRef.current = newSocket;
-    setSocket(newSocket);
-
-    // Socket event listeners
-    newSocket.on("connect", () => {
-      console.log(" Connected to server");
-      setIsLoading(false);
-      loadConversations();
-    });
-
-    newSocket.on("connect_error", (error) => {
-      console.error(" Socket connection error:", error);
-      if (error.message.includes("Authentication error")) {
-        console.log(" Token invalid, redirecting to login");
-        navigate("/");
-      }
-    });
-
-    newSocket.on("joinedPrivateChat", (data) => {
-      console.log(" Joined private chat:", data.chatIdentifier);
-    });
-
-    newSocket.on("privateChatHistory", (data) => {
-      console.log(
-        " Received chat history:",
-        data.messages?.length || 0,
-        "messages"
-      );
-      setMessages(data.messages || []);
-    });
-
-    newSocket.on("privateMessage", (message) => {
-      console.log(" New message received from:", message.sender.username);
-
-      // Add message to current conversation messages
-      const currentConversation = selectedConversationRef.current;
-      const currentUser = userRef.current;
-
-      if (
-        currentConversation &&
-        currentConversation.chatIdentifier === message.chatIdentifier
-      ) {
-        console.log(" Adding message to current conversation");
-        setMessages((prev) => {
-          // Check if message already exists
-          const exists = prev.some((msg) => msg._id === message._id);
-          if (exists) {
-            console.log(" Message already exists, not adding duplicate");
-            return prev;
-          }
-          return [...prev, message];
-        });
-      } else {
-        console.log(
-          " Message for different conversation, updating sidebar only"
-        );
-      }
-
-      // Update conversations list
-      setConversations((prev) => {
-        const existingConvIndex = prev.findIndex(
-          (conv) => conv.chatIdentifier === message.chatIdentifier
-        );
-
-        if (existingConvIndex !== -1) {
-          // Update existing conversation
-          const updatedConversations = [...prev];
-          updatedConversations[existingConvIndex] = {
-            ...updatedConversations[existingConvIndex],
-            lastMessage: message,
-          };
-          return updatedConversations;
-        } else {
-          // Create new conversation
-          const otherParticipant =
-            message.sender._id === currentUser._id
-              ? message.recipient || findUserById(message.recipientId)
-              : message.sender;
-
-          const newConversation = {
-            chatIdentifier: message.chatIdentifier,
-            otherParticipant,
-            lastMessage: message,
-            participants: [currentUser, otherParticipant],
-          };
-
-          console.log(
-            " Auto-creating conversation:",
-            newConversation.chatIdentifier
-          );
-          return [newConversation, ...prev];
-        }
-      });
-    });
-
-    newSocket.on("privateChatError", (error) => {
-      console.error(" Private chat error:", error);
-      alert(error);
-    });
-
-    newSocket.on("typing", (data) => {
-      // Handle typing indicator
-    });
-
-    newSocket.on("stopTyping", (data) => {
-      // Handle stop typing indicator
-    });
-
-    return () => {
-      console.log(" Disconnecting socket");
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [navigate, isAuthenticated, stableUser?.id, stableToken]); // Only essential dependencies
+  }, [isAuthenticated, isLoading, navigate]);
 
   const handleConversationSelect = (conversation) => {
     console.log(
-      " Selecting conversation with:",
+      "Selecting conversation with:",
       conversation.otherParticipant.username
     );
 
     setSelectedConversation(conversation);
-    setMessages([]); // Clear previous messages
 
     // Join the private chat room
-    if (socket && conversation.otherParticipant) {
-      console.log(" Joining private chat room");
-      socket.emit("joinPrivateChat", conversation.otherParticipant._id);
+    if (conversation.otherParticipant) {
+      joinChat(conversation.otherParticipant._id);
     }
   };
 
   const handleSendMessage = (content) => {
-    if (socket && selectedConversation && content.trim()) {
-      const messageData = {
-        recipientId: selectedConversation.otherParticipant._id,
-        content: content.trim(),
-      };
-      console.log(" Sending message:", content.substring(0, 30) + "...");
-      socket.emit("sendPrivateMessage", messageData);
+    if (selectedConversation && content.trim()) {
+      sendMessage(content, selectedConversation.otherParticipant._id);
     }
   };
 
   const handleNewConversation = (conversation) => {
     console.log(
-      " Creating new conversation with:",
+      "Creating new conversation with:",
       conversation.otherParticipant.username
     );
+
     setConversations((prev) => {
       const exists = prev.some(
         (conv) => conv.chatIdentifier === conversation.chatIdentifier
@@ -264,11 +112,12 @@ export default function Chat() {
       }
       return [conversation, ...prev];
     });
+
     setSelectedConversation(conversation);
     setShowNewConversationModal(false);
 
-    if (socket && conversation.otherParticipant) {
-      socket.emit("joinPrivateChat", conversation.otherParticipant._id);
+    if (conversation.otherParticipant) {
+      joinChat(conversation.otherParticipant._id);
     }
   };
 
