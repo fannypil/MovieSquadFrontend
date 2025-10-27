@@ -64,6 +64,9 @@ src/
 │   └── pages/
 │       └── Profile.jsx              # User profile page
 ```
+## 🖥️ Screenshots & Demo
+<img width="1968" height="1442" alt="Image" src="https://github.com/user-attachments/assets/0dec5690-14fd-462a-b70e-82d0c9148864" />
+
 
 ## 🚀 Getting Started
 
