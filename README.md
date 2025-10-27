@@ -65,8 +65,16 @@ src/
 │       └── Profile.jsx              # User profile page
 ```
 ## 🖥️ Screenshots & Demo
-<img width="1968" height="1442" alt="Image" src="https://github.com/user-attachments/assets/0dec5690-14fd-462a-b70e-82d0c9148864" />
-
+<img width="492" height="360" alt="Home" src="https://github.com/user-attachments/assets/0dec5690-14fd-462a-b70e-82d0c9148864" />
+<img width="492" height="360" alt="FeedScreenShot" src="https://github.com/user-attachments/assets/bd121c36-f2d3-47be-8228-428e9f729755" />
+<img width="492" height="360" alt="ProfileScreenShot" src="https://github.com/user-attachments/assets/6d6e19ae-e06e-49bd-b32c-f3a8b79f73b9" />
+<img width="492" height="360" alt="ChatScreenShot" src="https://github.com/user-attachments/assets/7279694a-9e5b-4812-97d7-6be79f8a2e87" />
+<img width="492" height="360" alt="NotificationScreenShot" src="https://github.com/user-attachments/assets/17bc5a5f-88f1-437e-badd-07af26cf9b70" />
+<img width="492" height="360" alt="AdminPanelScreenShot" src="https://github.com/user-attachments/assets/ff64e2a3-9203-454d-a34b-1bc74315d08d" />
+<img width="492" height="352" alt="GroupsScreenScreenShot" src="https://github.com/user-attachments/assets/90ac61e7-dd58-406e-8162-a2ae1a71c754" />
+<img width="492" height="360" alt="GroupScreenShot" src="https://github.com/user-attachments/assets/044f828f-1f18-497b-ae92-ee7fb978595d" />
+<img width="492" height="360" alt="GroupScreenShot2" src="https://github.com/user-attachments/assets/eedf0246-e345-4469-acd7-12cfce94e6c0" />
+<img width="492" height="360" alt="DiscoveryScreenShot" src="https://github.com/user-attachments/assets/57e2f412-d7e7-4817-9294-9d1d960bdfca" />
 
 ## 🚀 Getting Started
 
