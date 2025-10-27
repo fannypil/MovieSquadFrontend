@@ -20,7 +20,7 @@ A modern social platform for movie and TV show enthusiasts built with Next.js. C
 - **Categories**: Organize posts by type (Reviews, Recommendations, Discussions, etc.)
 - **Rich Content**: Support for movie posters and metadata
 
-### Groups (Coming Soon)
+### Groups
 - **Movie Groups**: Create and join groups based on interests
 - **Group Posts**: Share content within specific communities
 - **Group Management**: Admin controls for group moderation
