@@ -35,26 +35,28 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
+    <div className="moviesquad-bg dashboard-with-animation">
       {isAuthenticated && user ? (
         <Home />
       ) : (
-        <div className="text-center mb-5">
-          <h1 className="display-4 text-white mb-3">Welcome to MovieSquad</h1>
-          <p className="lead text-light">
-            Connect with fellow movie enthusiasts
-          </p>
-          <div className="row justify-content-center">
-            <div className="col-md-6 col-lg-4 mb-3">
-              <div className="auth-form-container">
-                { activeForm === "signin" ? (
-                  <SignIn onLoginSuccess={handleLoginSuccess} 
-                  onSwitchToSignUp={switchToSignUp} />
-                ):(
-                  <SignUp onLoginSuccess={handleLoginSuccess}
-                  onSwitchToSignIn={switchToSignIn} 
-                  />
-                 )}
+        <div className="container py-5">
+          <div className="text-center mb-5">
+            <h1 className="display-4 fw-bold text-white mb-3">Welcome to MovieSquad</h1>
+            <p className="lead text-light mx-auto" style={{ maxWidth: "600px" }}>
+              Connect with fellow movie enthusiasts
+            </p>
+            <div className="row justify-content-center">
+              <div className="col-md-6 col-lg-4 mb-3">
+                <div className="auth-form-container">
+                  { activeForm === "signin" ? (
+                    <SignIn onLoginSuccess={handleLoginSuccess} 
+                    onSwitchToSignUp={switchToSignUp} />
+                  ):(
+                    <SignUp onLoginSuccess={handleLoginSuccess}
+                    onSwitchToSignIn={switchToSignIn} 
+                    />
+                   )}
+                </div>
               </div>
             </div>
           </div>
