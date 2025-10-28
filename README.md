@@ -66,6 +66,7 @@ src/
 ```
 ## 🖥️ Screenshots & Demo
 <img width="492" height="360" alt="Home" src="https://github.com/user-attachments/assets/0dec5690-14fd-462a-b70e-82d0c9148864" />
+<img width="492" height="360" alt="Image" src="https://github.com/user-attachments/assets/ee62e181-b426-495b-b103-0f467f8fef81" />
 <img width="492" height="360" alt="FeedScreenShot" src="https://github.com/user-attachments/assets/bd121c36-f2d3-47be-8228-428e9f729755" />
 <img width="492" height="360" alt="ProfileScreenShot" src="https://github.com/user-attachments/assets/6d6e19ae-e06e-49bd-b32c-f3a8b79f73b9" />
 <img width="492" height="360" alt="ChatScreenShot" src="https://github.com/user-attachments/assets/7279694a-9e5b-4812-97d7-6be79f8a2e87" />
