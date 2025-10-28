@@ -594,3 +594,23 @@ h6 {
 .position-relative {
   position: relative;
 }
+
+.auth-form-container {
+  position: relative;
+  min-height: 500px; /* Adjust based on your form height */
+}
+
+.auth-form-container > div {
+  animation: slideIn 0.3s ease-in-out;
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+

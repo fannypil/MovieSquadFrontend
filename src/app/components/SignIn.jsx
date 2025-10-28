@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 
-export default function SignIn({ onLoginSuccess }) {
+export default function SignIn({ onLoginSuccess,onSwitchToSignUp }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSuccess] = useState(false);
@@ -100,7 +100,7 @@ export default function SignIn({ onLoginSuccess }) {
           </div>
         )}
         <form onSubmit={handleSignIn}>
-          <div className="form-floating mb-3">
+          <div className="form-floating mb-3 position-relative">
             <input
               type="email"
               className={`form-control bg-dark text-light ${
@@ -115,6 +115,16 @@ export default function SignIn({ onLoginSuccess }) {
             <label htmlFor="signinEmail" className="text-muted">
               Email address
             </label>
+            <i 
+              className="bi bi-envelope-fill position-absolute text-muted"
+              style={{
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                fontSize: '1rem'
+              }}
+            ></i>
             {errors.email && (
               <div className="invalid-feedback">{errors.email}</div>
             )}
@@ -134,6 +144,16 @@ export default function SignIn({ onLoginSuccess }) {
             <label htmlFor="signinPassword" className="text-muted">
               Password
             </label>
+            <i 
+                className="bi bi-lock-fill position-absolute text-muted"
+                style={{
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 10,
+                  fontSize: '1rem'
+                }}
+              ></i>
             {errors.password && (
               <div className="invalid-feedback">{errors.password}</div>
             )}
@@ -143,6 +163,7 @@ export default function SignIn({ onLoginSuccess }) {
             className="btn btn-gold w-100"
             disabled={isLoading}
           >
+            
             {isLoading ? (
               <>
                 <span
@@ -155,6 +176,16 @@ export default function SignIn({ onLoginSuccess }) {
               "Sign In"
             )}
           </button>
+            <p className="text-center mt-3 text-white">
+              <button 
+                type="button"
+                className="btn btn-link text-white text-decoration-none p-0"
+                onClick={onSwitchToSignUp}
+                style={{ background: 'none', border: 'none' }}
+              >
+                Don't have an account? <span className="text-warning">Register here</span>
+              </button>
+            </p>
         </form>
       </div>
     </div>

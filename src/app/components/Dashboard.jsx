@@ -9,6 +9,7 @@ import { useAuth } from "../hooks/useAuth";
 export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [activeForm, setActiveForm] = useState("signin");
 
   // Redirect authenticated users to home
   useEffect(() => {
@@ -21,6 +22,12 @@ export default function Dashboard() {
     console.log("Login success:", userData);
     navigate("/home", { replace: true });
   };
+  const switchToSignUp = ()=>{
+    setActiveForm("signup");
+  }
+  const switchToSignIn = ()=>{
+    setActiveForm("signin");
+  }
 
   // Only render auth forms if user is not authenticated
   if (isAuthenticated && user) {
@@ -39,10 +46,16 @@ export default function Dashboard() {
           </p>
           <div className="row justify-content-center">
             <div className="col-md-6 col-lg-4 mb-3">
-              <SignIn onLoginSuccess={handleLoginSuccess} />
-            </div>
-            <div className="col-md-6 col-lg-4 mb-3">
-              <SignUp onLoginSuccess={handleLoginSuccess} />
+              <div className="auth-form-container">
+                { activeForm === "signin" ? (
+                  <SignIn onLoginSuccess={handleLoginSuccess} 
+                  onSwitchToSignUp={switchToSignUp} />
+                ):(
+                  <SignUp onLoginSuccess={handleLoginSuccess}
+                  onSwitchToSignIn={switchToSignIn} 
+                  />
+                 )}
+              </div>
             </div>
           </div>
         </div>

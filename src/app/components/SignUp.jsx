@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 
-export default function SignUp({ onLoginSuccess }) {
+export default function SignUp({ onLoginSuccess,onSwitchToSignIn}) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -146,6 +146,16 @@ export default function SignUp({ onLoginSuccess }) {
             <label htmlFor="signupUsername" className="text-muted">
               User Name
             </label>
+              <i 
+                className="bi bi-person-fill position-absolute text-muted"
+                style={{
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 10,
+                  fontSize: '1rem'
+                }}
+              ></i>
             {errors.username && (
               <div className="invalid-feedback">{errors.username}</div>
             )}
@@ -165,6 +175,16 @@ export default function SignUp({ onLoginSuccess }) {
             <label htmlFor="signupEmail" className="text-muted">
               Email address
             </label>
+            <i 
+              className="bi bi-envelope-fill position-absolute text-muted"
+              style={{
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                fontSize: '1rem'
+              }}
+            ></i>
             {errors.email && (
               <div className="invalid-feedback">{errors.email}</div>
             )}
@@ -184,6 +204,16 @@ export default function SignUp({ onLoginSuccess }) {
             <label htmlFor="signupPassword" className="text-muted">
               Password
             </label>
+            <i 
+                className="bi bi-lock-fill position-absolute text-muted"
+                style={{
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 10,
+                  fontSize: '1rem'
+                }}
+              ></i>
             {errors.password && (
               <div className="invalid-feedback">{errors.password}</div>
             )}
@@ -205,6 +235,16 @@ export default function SignUp({ onLoginSuccess }) {
               "Sign Up"
             )}
           </button>
+          <p className="text-center mt-3 text-white">
+            <button 
+              type="button"
+              className="btn btn-link text-white text-decoration-none p-0"
+              onClick={onSwitchToSignIn}
+              style={{ background: 'none', border: 'none' }}
+            >
+              Already have an account? <span className="text-warning">Sign in here</span>
+            </button>
+          </p>
         </form>
       </div>
     </div>
